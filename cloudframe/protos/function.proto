@@ -1,0 +1,20 @@
+syntax = "proto3";
+package FunctionData;
+
+service Greeter {
+  rpc Call (FunctionRequest) returns (FunctionReply) {}
+}
+
+message FunctionRequest {
+  string opr = 1;
+  string tenant = 2;
+  string version = 3;
+  string resource = 4;
+  string res_id = 5;
+  string req = 6;
+}
+
+message FunctionReply {
+  string return_code = 1;
+  string ack = 2;
+}

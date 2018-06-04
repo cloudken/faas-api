@@ -1,0 +1,6 @@
+syntax = "proto3";
+package HbData;
+service Heartbeat {
+  rpc Call(Data) returns (Data){}
+}
+message Data {}
