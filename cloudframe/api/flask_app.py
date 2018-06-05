@@ -8,7 +8,6 @@ import logging
 from six.moves import http_client
 from werkzeug.contrib.fixers import ProxyFix
 
-from cloudframe.common.utils import get_resource
 from cloudframe.common.utils import generate_uuid
 from cloudframe.manager.manager import FunctionManager
 

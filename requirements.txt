@@ -6,4 +6,4 @@ gevent
 httplib2
 pbr
 six
-sqlalchemy
+grpcio

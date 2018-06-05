@@ -74,4 +74,3 @@ class Instance(object):
 
         LOG.debug('Create instance for image %(image)s on host %(host)s end.',
                   {'image': image, 'host': host})
-    

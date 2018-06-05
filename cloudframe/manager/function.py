@@ -4,9 +4,9 @@ from cloudframe.driver.docker import Instance
 
 Fun_list = ['get', 'post', 'put', 'delete']
 Resources = {
-    'dom1_res1_v1':{'get': 'image1', 'post': 'image1', 'put': 'image1', 'delete': 'image1'},
-    'dom1_res2_v1':{'get': 'image2', 'post': 'image3', 'put': 'image3', 'delete': 'image3'},
-    'dom1_res2_v2':{'get': None, 'post': 'image4', 'put': None, 'delete': None},
+    'dom1_res1_v1': {'get': 'image1', 'post': 'image1', 'put': 'image1', 'delete': 'image1'},
+    'dom1_res2_v1': {'get': 'image2', 'post': 'image3', 'put': 'image3', 'delete': 'image3'},
+    'dom1_res2_v2': {'get': None, 'post': 'image4', 'put': None, 'delete': None},
 }
 
 MAX_INS = 10

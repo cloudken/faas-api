@@ -7,6 +7,7 @@ from cloudframe.protos import function_pb2_grpc
 from cloudframe.protos import heartbeat_pb2
 from cloudframe.protos import heartbeat_pb2_grpc
 
+
 class MyRPC(object):
     def __init__(self, worker_data):
         self.host = worker_data['host_ip'] + ':' + worker_data['host_port']

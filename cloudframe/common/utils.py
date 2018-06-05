@@ -38,6 +38,7 @@ def get_resource(resource_name, version):
     res = 'restframe.api.resources.' + version + '.' + resource_name
     return import_module(res)
 
+
 def _get_root_helper():
     return 'sudo cloudframe-rootwrap %s'
 
