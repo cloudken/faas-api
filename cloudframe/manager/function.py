@@ -1,4 +1,5 @@
 
+from cloudframe.common import exception
 from cloudframe.common.rpc import MyRPC
 from cloudframe.driver.docker import Instance
 
@@ -23,22 +24,28 @@ class FunctionInstances(object):
 
     def _get_image(self, domain, version, res, opr, num):
         if num > MAX_INS:
-            return None
+            raise exception.ParameterInvalid(key='num', value=num)
         res_name = domain + '_' + res + '_' + version
-        if res_name not in Resources.key():
-            return None
+        if res_name not in Resources:
+            raise exception.ObjectNotFound(object=res_name)
         fun_name = str.lower(opr)
         if fun_name not in Fun_list:
-            return None
-        return Resources[res_name][fun_name]
+            raise exception.ParameterInvalid(key='function', value=fun_name)
+        image_info = Resources[res_name][fun_name]
+        if image_info is None:
+            raise exception.ImageNotFound(res=res_name, opr=fun_name)
+        return image_info
 
     def _launch_ins(self, image_name, num):
-        port = self.port_idle_list.pop(len(self.port_idle_list) - 1)
-        self.port_busy_list.append(port)
-        ins_name = image_name + '_' + num
-        ins_data = self.driver.create(image_name, port)
-        self.ins_list[ins_name] = ins_data
-        return ins_data
+        try:
+            port = self.port_idle_list.pop(len(self.port_idle_list) - 1)
+            self.port_busy_list.append(port)
+            ins_name = image_name + '_' + str(num)
+            ins_data = self.driver.create(image_name, port)
+            self.ins_list[ins_name] = ins_data
+            return ins_data
+        except:
+            raise exception.CreateError(object=image_name)
 
     def _check_ins(self, ins_data):
         rpc = MyRPC(ins_data)
@@ -56,10 +63,8 @@ class FunctionInstances(object):
 
     def get(self, domain, version, res, opr, num):
         image_name = self._get_image(domain, version, res, opr, num)
-        if image_name is None:
-            return None
-        ins_name = image_name + '_' + num
-        if ins_name not in self.ins_list.key():
+        ins_name = image_name + '_' + str(num)
+        if ins_name not in self.ins_list:
             return None
         else:
             ins_data = self.ins_list[ins_name]
@@ -71,10 +76,5 @@ class FunctionInstances(object):
 
     def create(self, domain, version, res, opr, num):
         image_name = self._get_image(domain, version, res, opr, num)
-        if image_name is None:
-            return None
-        try:
-            ins_data = self._launch_ins(image_name, num)
-            return ins_data
-        except:
-            return None
+        ins_data = self._launch_ins(image_name, num)
+        return ins_data

@@ -11,7 +11,7 @@ class FunctionScheduler(FunctionInstances):
 
     def get_worker(self, domain, version, res, opr):
         num = random.randint(1, MAX_INS)
-        worker = self.fun.get(domain, version, res, opr, num)
+        worker = self.get(domain, version, res, opr, num)
         if worker is None:
-            worker = self.fun.create(domain, version, res, opr, num)
+            worker = self.create(domain, version, res, opr, num)
         return worker

@@ -85,3 +85,28 @@ class Invalid(CloudframeException):
 class HttpError(CloudframeException):
     message = "Http error"
     code = http_client.INTERNAL_SERVER_ERROR
+
+
+class FunctionNotFound(CloudframeException):
+    message = "Function for %(fun)s could not be found."
+    code = http_client.METHOD_NOT_ALLOWED
+
+
+class ObjectNotFound(CloudframeException):
+    message = "Object for %(object)s could not be found."
+    code = http_client.NOT_FOUND
+
+
+class ParameterInvalid(CloudframeException):
+    message = "Parameter [k: %(key)s, v: %(value)s] is invalid."
+    code = http_client.BAD_REQUEST
+
+
+class CreateError(CloudframeException):
+    message = "Creation for %(object)s error!"
+    code = http_client.INTERNAL_SERVER_ERROR
+
+
+class ImageNotFound(CloudframeException):
+    message = "Image for [%(res)s, %(opr)s] could not be found."
+    code = http_client.NOT_FOUND

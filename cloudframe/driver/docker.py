@@ -31,7 +31,7 @@ class Instance(object):
     def create(self, app_info, port):
         num = random.randint(0, len(HOSTS) - 1)
         host = HOSTS[num]
-        image = 'http://' + self.registry_ip + ':' + self.registry_port + '/' + app_info
+        image = 'http://' + self.registry_ip + ':' + str(self.registry_port) + '/' + app_info
         name = app_info + '_' + generate_uuid()
         self._create_instance(name, image, host, port)
         ack = {

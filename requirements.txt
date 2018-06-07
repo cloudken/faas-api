@@ -6,4 +6,5 @@ gevent
 httplib2
 pbr
 six
+oslo_concurrency
 grpcio

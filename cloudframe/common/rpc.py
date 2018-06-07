@@ -10,7 +10,7 @@ from cloudframe.protos import heartbeat_pb2_grpc
 
 class MyRPC(object):
     def __init__(self, worker_data):
-        self.host = worker_data['host_ip'] + ':' + worker_data['host_port']
+        self.host = worker_data['host_ip'] + ':' + str(worker_data['host_port'])
 
     def call_function(self, opr, tenant, version, res, res_id, req):
         req_str = json.dumps(req)

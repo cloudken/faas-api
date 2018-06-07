@@ -8,7 +8,8 @@ import logging
 from six.moves import http_client
 from werkzeug.contrib.fixers import ProxyFix
 
-from cloudframe.common.utils import generate_uuid
+# from cloudframe.common.utils import generate_uuid
+from cloudframe.common import exception
 from cloudframe.manager.manager import FunctionManager
 
 LOG = logging.getLogger(__name__)
@@ -43,12 +44,12 @@ def get_detail(domain_name=None, ver=None, tenant_id=None,
            methods=['POST'])
 def post(domain_name=None, ver=None, tenant_id=None, res_name=None):
     try:
-        uuid = generate_uuid()
-        results = Manager.function_call(domain_name, ver, tenant_id, res_name, 'post', req=request.json, res_id=uuid)
+        # uuid = generate_uuid()
+        results = Manager.function_call(domain_name, ver, tenant_id, res_name, 'post', request.json)
         return make_response(jsonify(results[1]), results[0])
-    except Exception as e:
+    except exception.CloudframeException as e:
         return make_response(jsonify({'error': e.message}),
-                             http_client.INTERNAL_SERVER_ERROR)
+                             e.code)
 
 
 @app.route('/<domain_name>/<ver>/tenants/<tenant_id>/<res_name>/<uuid>',
@@ -58,11 +59,11 @@ def put(domain_name=None, ver=None, tenant_id=None,
     if not request.json:
         abort(http_client.BAD_REQUEST)
     try:
-        results = Manager.function_call(domain_name, ver, tenant_id, res_name, 'put', req=request.json, res_id=uuid)
+        results = Manager.function_call(domain_name, ver, tenant_id, res_name, 'put', request.json, res_id=uuid)
         return make_response(jsonify(results[1]), results[0])
-    except Exception as e:
+    except exception.CloudframeException as e:
         return make_response(jsonify({'error': e.message}),
-                             http_client.INTERNAL_SERVER_ERROR)
+                             e.code)
 
 
 @app.route('/<domain_name>/<ver>/tenants/<tenant_id>/<res_name>/<uuid>',
