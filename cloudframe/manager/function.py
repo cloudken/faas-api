@@ -1,4 +1,6 @@
 
+import time
+
 from cloudframe.common import exception
 from cloudframe.common.rpc import MyRPC
 from cloudframe.driver.docker import Instance
@@ -36,13 +38,11 @@ class FunctionInstances(object):
             raise exception.ImageNotFound(res=res_name, opr=fun_name)
         return image_info
 
-    def _launch_ins(self, image_name, num):
+    def _launch_ins(self, image_name):
         try:
             port = self.port_idle_list.pop(len(self.port_idle_list) - 1)
             self.port_busy_list.append(port)
-            ins_name = image_name + '_' + str(num)
             ins_data = self.driver.create(image_name, port)
-            self.ins_list[ins_name] = ins_data
             return ins_data
         except:
             raise exception.CreateError(object=image_name)
@@ -76,5 +76,11 @@ class FunctionInstances(object):
 
     def create(self, domain, version, res, opr, num):
         image_name = self._get_image(domain, version, res, opr, num)
-        ins_data = self._launch_ins(image_name, num)
-        return ins_data
+        ins_data = self._launch_ins(image_name)
+        for index in range(5):
+            if self._check_ins(ins_data):
+                ins_name = image_name + '_' + str(num)
+                self.ins_list[ins_name] = ins_data
+                return ins_data
+            time.sleep(index)
+        raise exception.CreateError(object=image_name)
