@@ -1,4 +1,5 @@
 
+from six.moves import http_client
 import time
 
 from cloudframe.common import exception
@@ -50,8 +51,11 @@ class FunctionInstances(object):
     def _check_ins(self, ins_data):
         rpc = MyRPC(ins_data)
         try:
-            rpc.call_heartbeat()
-            return True
+            ack = rpc.call_heartbeat()
+            if ack[0] is http_client.OK:
+                return True
+            else:
+                return False
         except:
             return False
 

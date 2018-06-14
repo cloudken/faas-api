@@ -24,7 +24,7 @@ from gevent import pywsgi
 import logging
 import os
 
-from cloudframe.common import job
+# from cloudframe.common import job
 from cloudframe.api.flask_app import app
 
 os.environ.setdefault('LOG_LEVEL', 'DEBUG')
@@ -48,5 +48,5 @@ def main():
     LOG = logging.getLogger(__name__)
     LOG.debug("Starting...")
     server = pywsgi.WSGIServer(('0.0.0.0', 5000), app)
-    job.start_worker(5)
+    # job.start_worker(5)
     server.serve_forever()

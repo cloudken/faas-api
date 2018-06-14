@@ -27,6 +27,7 @@ class TestManagerServers(testtools.TestCase):
         req = {'name': 'server 1'}
         ack = {'result': 'OK'}
         mock_cf.return_value = http_client.OK, ack
+        mock_ch.return_value = http_client.OK, ack
         rv = self.manager.function_call(domain, version, tenant, res, opr, req)
         mock_ci.assert_called_once()
         mock_ch.assert_called_once()
@@ -45,7 +46,7 @@ class TestManagerServers(testtools.TestCase):
         req = {'name': 'server 1'}
         ack = {'result': 'OK'}
         mock_cf.return_value = http_client.OK, ack
-        mock_ch.side_effect = [exception.HttpError, exception.HttpError, 'ok']
+        mock_ch.side_effect = [exception.HttpError, exception.HttpError, [http_client.OK, ack]]
         rv = self.manager.function_call(domain, version, tenant, res, opr, req)
         mock_ci.assert_called_once()
         mock_ch.assert_called()
