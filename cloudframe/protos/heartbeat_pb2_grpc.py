@@ -4,7 +4,7 @@ import grpc
 import heartbeat_pb2 as heartbeat__pb2
 
 
-class HeartbeatStub(object):
+class GreeterStub(object):
   # missing associated documentation comment in .proto file
   pass
 
@@ -15,13 +15,13 @@ class HeartbeatStub(object):
       channel: A grpc.Channel.
     """
     self.Call = channel.unary_unary(
-        '/HbData.Heartbeat/Call',
-        request_serializer=heartbeat__pb2.Data.SerializeToString,
-        response_deserializer=heartbeat__pb2.Data.FromString,
+        '/HbData.Greeter/Call',
+        request_serializer=heartbeat__pb2.HbRequest.SerializeToString,
+        response_deserializer=heartbeat__pb2.HbReply.FromString,
         )
 
 
-class HeartbeatServicer(object):
+class GreeterServicer(object):
   # missing associated documentation comment in .proto file
   pass
 
@@ -33,14 +33,14 @@ class HeartbeatServicer(object):
     raise NotImplementedError('Method not implemented!')
 
 
-def add_HeartbeatServicer_to_server(servicer, server):
+def add_GreeterServicer_to_server(servicer, server):
   rpc_method_handlers = {
       'Call': grpc.unary_unary_rpc_method_handler(
           servicer.Call,
-          request_deserializer=heartbeat__pb2.Data.FromString,
-          response_serializer=heartbeat__pb2.Data.SerializeToString,
+          request_deserializer=heartbeat__pb2.HbRequest.FromString,
+          response_serializer=heartbeat__pb2.HbReply.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
-      'HbData.Heartbeat', rpc_method_handlers)
+      'HbData.Greeter', rpc_method_handlers)
   server.add_generic_rpc_handlers((generic_handler,))

@@ -1,6 +1,14 @@
 syntax = "proto3";
 package HbData;
-service Heartbeat {
-  rpc Call(Data) returns (Data){}
+
+service Greeter {
+  rpc Call (HbRequest) returns (HbReply) {}
 }
-message Data {}
+
+message HbRequest {}
+
+message HbReply {
+  string return_code = 1;
+  string ack = 2;
+}
+

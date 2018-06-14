@@ -19,15 +19,15 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='heartbeat.proto',
   package='HbData',
   syntax='proto3',
-  serialized_pb=_b('\n\x0fheartbeat.proto\x12\x06HbData\"\x06\n\x04\x44\x61ta21\n\tHeartbeat\x12$\n\x04\x43\x61ll\x12\x0c.HbData.Data\x1a\x0c.HbData.Data\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x0fheartbeat.proto\x12\x06HbData\"\x0b\n\tHbRequest\"+\n\x07HbReply\x12\x13\n\x0breturn_code\x18\x01 \x01(\t\x12\x0b\n\x03\x61\x63k\x18\x02 \x01(\t27\n\x07Greeter\x12,\n\x04\x43\x61ll\x12\x11.HbData.HbRequest\x1a\x0f.HbData.HbReply\"\x00\x62\x06proto3')
 )
 
 
 
 
-_DATA = _descriptor.Descriptor(
-  name='Data',
-  full_name='HbData.Data',
+_HBREQUEST = _descriptor.Descriptor(
+  name='HbRequest',
+  full_name='HbData.HbRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
@@ -45,43 +45,89 @@ _DATA = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=27,
-  serialized_end=33,
+  serialized_end=38,
 )
 
-DESCRIPTOR.message_types_by_name['Data'] = _DATA
+
+_HBREPLY = _descriptor.Descriptor(
+  name='HbReply',
+  full_name='HbData.HbReply',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='return_code', full_name='HbData.HbReply.return_code', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='ack', full_name='HbData.HbReply.ack', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=40,
+  serialized_end=83,
+)
+
+DESCRIPTOR.message_types_by_name['HbRequest'] = _HBREQUEST
+DESCRIPTOR.message_types_by_name['HbReply'] = _HBREPLY
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-Data = _reflection.GeneratedProtocolMessageType('Data', (_message.Message,), dict(
-  DESCRIPTOR = _DATA,
+HbRequest = _reflection.GeneratedProtocolMessageType('HbRequest', (_message.Message,), dict(
+  DESCRIPTOR = _HBREQUEST,
   __module__ = 'heartbeat_pb2'
-  # @@protoc_insertion_point(class_scope:HbData.Data)
+  # @@protoc_insertion_point(class_scope:HbData.HbRequest)
   ))
-_sym_db.RegisterMessage(Data)
+_sym_db.RegisterMessage(HbRequest)
+
+HbReply = _reflection.GeneratedProtocolMessageType('HbReply', (_message.Message,), dict(
+  DESCRIPTOR = _HBREPLY,
+  __module__ = 'heartbeat_pb2'
+  # @@protoc_insertion_point(class_scope:HbData.HbReply)
+  ))
+_sym_db.RegisterMessage(HbReply)
 
 
 
-_HEARTBEAT = _descriptor.ServiceDescriptor(
-  name='Heartbeat',
-  full_name='HbData.Heartbeat',
+_GREETER = _descriptor.ServiceDescriptor(
+  name='Greeter',
+  full_name='HbData.Greeter',
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=35,
-  serialized_end=84,
+  serialized_start=85,
+  serialized_end=140,
   methods=[
   _descriptor.MethodDescriptor(
     name='Call',
-    full_name='HbData.Heartbeat.Call',
+    full_name='HbData.Greeter.Call',
     index=0,
     containing_service=None,
-    input_type=_DATA,
-    output_type=_DATA,
+    input_type=_HBREQUEST,
+    output_type=_HBREPLY,
     options=None,
   ),
 ])
-_sym_db.RegisterServiceDescriptor(_HEARTBEAT)
+_sym_db.RegisterServiceDescriptor(_GREETER)
 
-DESCRIPTOR.services_by_name['Heartbeat'] = _HEARTBEAT
+DESCRIPTOR.services_by_name['Greeter'] = _GREETER
 
 try:
   # THESE ELEMENTS WILL BE DEPRECATED.
@@ -93,7 +139,7 @@ try:
   from grpc.framework.interfaces.face import utilities as face_utilities
 
 
-  class HeartbeatStub(object):
+  class GreeterStub(object):
     # missing associated documentation comment in .proto file
     pass
 
@@ -104,13 +150,13 @@ try:
         channel: A grpc.Channel.
       """
       self.Call = channel.unary_unary(
-          '/HbData.Heartbeat/Call',
-          request_serializer=Data.SerializeToString,
-          response_deserializer=Data.FromString,
+          '/HbData.Greeter/Call',
+          request_serializer=HbRequest.SerializeToString,
+          response_deserializer=HbReply.FromString,
           )
 
 
-  class HeartbeatServicer(object):
+  class GreeterServicer(object):
     # missing associated documentation comment in .proto file
     pass
 
@@ -122,20 +168,20 @@ try:
       raise NotImplementedError('Method not implemented!')
 
 
-  def add_HeartbeatServicer_to_server(servicer, server):
+  def add_GreeterServicer_to_server(servicer, server):
     rpc_method_handlers = {
         'Call': grpc.unary_unary_rpc_method_handler(
             servicer.Call,
-            request_deserializer=Data.FromString,
-            response_serializer=Data.SerializeToString,
+            request_deserializer=HbRequest.FromString,
+            response_serializer=HbReply.SerializeToString,
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-        'HbData.Heartbeat', rpc_method_handlers)
+        'HbData.Greeter', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
-  class BetaHeartbeatServicer(object):
+  class BetaGreeterServicer(object):
     """The Beta API is deprecated for 0.15.0 and later.
 
     It is recommended to use the GA API (classes and functions in this
@@ -149,7 +195,7 @@ try:
       context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
 
 
-  class BetaHeartbeatStub(object):
+  class BetaGreeterStub(object):
     """The Beta API is deprecated for 0.15.0 and later.
 
     It is recommended to use the GA API (classes and functions in this
@@ -164,42 +210,42 @@ try:
     Call.future = None
 
 
-  def beta_create_Heartbeat_server(servicer, pool=None, pool_size=None, default_timeout=None, maximum_timeout=None):
+  def beta_create_Greeter_server(servicer, pool=None, pool_size=None, default_timeout=None, maximum_timeout=None):
     """The Beta API is deprecated for 0.15.0 and later.
 
     It is recommended to use the GA API (classes and functions in this
     file not marked beta) for all further purposes. This function was
     generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
     request_deserializers = {
-      ('HbData.Heartbeat', 'Call'): Data.FromString,
+      ('HbData.Greeter', 'Call'): HbRequest.FromString,
     }
     response_serializers = {
-      ('HbData.Heartbeat', 'Call'): Data.SerializeToString,
+      ('HbData.Greeter', 'Call'): HbReply.SerializeToString,
     }
     method_implementations = {
-      ('HbData.Heartbeat', 'Call'): face_utilities.unary_unary_inline(servicer.Call),
+      ('HbData.Greeter', 'Call'): face_utilities.unary_unary_inline(servicer.Call),
     }
     server_options = beta_implementations.server_options(request_deserializers=request_deserializers, response_serializers=response_serializers, thread_pool=pool, thread_pool_size=pool_size, default_timeout=default_timeout, maximum_timeout=maximum_timeout)
     return beta_implementations.server(method_implementations, options=server_options)
 
 
-  def beta_create_Heartbeat_stub(channel, host=None, metadata_transformer=None, pool=None, pool_size=None):
+  def beta_create_Greeter_stub(channel, host=None, metadata_transformer=None, pool=None, pool_size=None):
     """The Beta API is deprecated for 0.15.0 and later.
 
     It is recommended to use the GA API (classes and functions in this
     file not marked beta) for all further purposes. This function was
     generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
     request_serializers = {
-      ('HbData.Heartbeat', 'Call'): Data.SerializeToString,
+      ('HbData.Greeter', 'Call'): HbRequest.SerializeToString,
     }
     response_deserializers = {
-      ('HbData.Heartbeat', 'Call'): Data.FromString,
+      ('HbData.Greeter', 'Call'): HbReply.FromString,
     }
     cardinalities = {
       'Call': cardinality.Cardinality.UNARY_UNARY,
     }
     stub_options = beta_implementations.stub_options(host=host, metadata_transformer=metadata_transformer, request_serializers=request_serializers, response_deserializers=response_deserializers, thread_pool=pool, thread_pool_size=pool_size)
-    return beta_implementations.dynamic_stub(channel, 'HbData.Heartbeat', cardinalities, options=stub_options)
+    return beta_implementations.dynamic_stub(channel, 'HbData.Greeter', cardinalities, options=stub_options)
 except ImportError:
   pass
 # @@protoc_insertion_point(module_scope)
