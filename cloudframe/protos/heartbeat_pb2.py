@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='heartbeat.proto',
   package='HbData',
   syntax='proto3',
-  serialized_pb=_b('\n\x0fheartbeat.proto\x12\x06HbData\"\x0b\n\tHbRequest\"+\n\x07HbReply\x12\x13\n\x0breturn_code\x18\x01 \x01(\t\x12\x0b\n\x03\x61\x63k\x18\x02 \x01(\t27\n\x07Greeter\x12,\n\x04\x43\x61ll\x12\x11.HbData.HbRequest\x1a\x0f.HbData.HbReply\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x0fheartbeat.proto\x12\x06HbData\"\x0b\n\tHbRequest\"+\n\x07HbReply\x12\x13\n\x0breturn_code\x18\x01 \x01(\x05\x12\x0b\n\x03\x61\x63k\x18\x02 \x01(\t27\n\x07Greeter\x12,\n\x04\x43\x61ll\x12\x11.HbData.HbRequest\x1a\x0f.HbData.HbReply\"\x00\x62\x06proto3')
 )
 
 
@@ -58,8 +58,8 @@ _HBREPLY = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='return_code', full_name='HbData.HbReply.return_code', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),

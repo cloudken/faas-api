@@ -8,7 +8,7 @@ service Greeter {
 message HbRequest {}
 
 message HbReply {
-  string return_code = 1;
+  int32 return_code = 1;
   string ack = 2;
 }
 
