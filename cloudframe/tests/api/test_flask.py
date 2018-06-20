@@ -17,7 +17,8 @@ class TestFlaskAPIServers(ApiTestCase):
         server = {"name": "server 1"}
         headers = {'content-type': 'application/json',
                    "Accept": "application/json"}
-        mock_fc.return_value = http_client.OK, server
+        server_str = json.dumps(server)
+        mock_fc.return_value = http_client.OK, server_str
         rv = self.app.post('/domain/v1/tenants/admin/resoures',
                            data=json.dumps(server), headers=headers)
         mock_fc.assert_called_once_with(mock.ANY, mock.ANY, mock.ANY, mock.ANY, mock.ANY, server)
@@ -40,7 +41,8 @@ class TestFlaskAPIServers(ApiTestCase):
         server = {'name': 'server 1'}
         headers = {'content-type': 'application/json',
                    "Accept": "application/json"}
-        mock_fc.return_value = http_client.OK, server
+        server_str = json.dumps(server)
+        mock_fc.return_value = http_client.OK, server_str
         rv = self.app.put('/domain/v1/tenants/admin/resoures/1234',
                           data=json.dumps(server), headers=headers)
         mock_fc.assert_called_once()

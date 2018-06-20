@@ -19,9 +19,9 @@ class MyRPC(object):
         response = stub.Call(function_pb2.FunctionRequest(
             opr=opr, tenant=tenant, version=version,
             resource=res, res_id=res_id, req=req_str))
-        return response.return_code, json.loads(response.ack)
+        return response.return_code, response.ack
 
     def call_heartbeat(self):
         stub = heartbeat_pb2_grpc.GreeterStub(self.channel)
         response = stub.Call(heartbeat_pb2.HbRequest())
-        return response.return_code, json.loads(response.ack)
+        return response.return_code, response.ack
