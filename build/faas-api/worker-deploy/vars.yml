@@ -1,0 +1,6 @@
+---
+- deploy_name: 
+- deploy_image: 
+- host_port: 
+- verbose: True
+- debug: True

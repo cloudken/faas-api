@@ -34,6 +34,7 @@ class CloudframeException(Exception):
         if not message:
             try:
                 message = self.message % kwargs
+                self.message = message
 
             except Exception:
                 # kwargs doesn't match a variable in the message

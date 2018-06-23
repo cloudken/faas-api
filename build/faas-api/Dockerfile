@@ -24,5 +24,8 @@ RUN rm -rf /usr/lib/libc.a
 COPY supervisord.conf /etc/supervisord.conf
 RUN mkdir -p /var/log/cloudframe
 RUN rm -rf /root/temp
+RUN mkdir -p /root/faas
+COPY worker-deploy /root/faas/worker-deploy
+COPY ansible.cfg /root/.ansible.cfg
 WORKDIR /
 ENTRYPOINT ["/usr/bin/supervisord"]

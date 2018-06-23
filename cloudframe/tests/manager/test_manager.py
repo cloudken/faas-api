@@ -22,7 +22,7 @@ class TestManagerServers(testtools.TestCase):
         domain = 'dom1'
         version = 'v1'
         tenant = 'tenant'
-        res = 'res1'
+        res = 'res01'
         opr = 'post'
         req = {'name': 'server 1'}
         ack = {'result': 'OK'}
@@ -41,7 +41,7 @@ class TestManagerServers(testtools.TestCase):
         domain = 'dom1'
         version = 'v1'
         tenant = 'tenant'
-        res = 'res1'
+        res = 'res01'
         opr = 'post'
         req = {'name': 'server 1'}
         ack = {'result': 'OK'}
@@ -59,7 +59,7 @@ class TestManagerServers(testtools.TestCase):
         domain = 'dom1'
         version = 'v1'
         tenant = 'tenant'
-        res = 'res1'
+        res = 'res01'
         opr = 'post'
         req = {'name': 'server 1'}
         mock_ci.side_effect = exception.HttpError
@@ -72,7 +72,7 @@ class TestManagerServers(testtools.TestCase):
         domain = 'dom1'
         version = 'v1'
         tenant = 'tenant'
-        res = 'res1'
+        res = 'res01'
         opr = 'post'
         req = {'name': 'server 1'}
         ack = {'result': 'OK'}
@@ -93,7 +93,7 @@ class TestManagerServers(testtools.TestCase):
         domain = 'dom1'
         version = 'v1'
         tenant = 'tenant'
-        res = 'res1'
+        res = 'res01'
         opr = 'write'
         req = {'name': 'server 1'}
         self.assertRaises(exception.ParameterInvalid, self.manager.function_call, domain, version, tenant, res, opr, req)

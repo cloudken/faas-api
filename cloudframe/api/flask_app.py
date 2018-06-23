@@ -23,9 +23,9 @@ def get_list(domain_name=None, ver=None, tenant_id=None, res_name=None):
     try:
         results = Manager.function_call(domain_name, ver, tenant_id, res_name, 'get')
         return make_response(results[1], results[0])
-    except Exception as e:
+    except exception.CloudframeException as e:
         return make_response(jsonify({'error': e.message}),
-                             http_client.INTERNAL_SERVER_ERROR)
+                             e.code)
 
 
 @app.route('/<domain_name>/<ver>/tenants/<tenant_id>/<res_name>/<uuid>',
@@ -35,9 +35,9 @@ def get_detail(domain_name=None, ver=None, tenant_id=None,
     try:
         results = Manager.function_call(domain_name, ver, tenant_id, res_name, 'get', res_id=uuid)
         return make_response(results[1], results[0])
-    except Exception as e:
+    except exception.CloudframeException as e:
         return make_response(jsonify({'error': e.message}),
-                             http_client.INTERNAL_SERVER_ERROR)
+                             e.code)
 
 
 @app.route('/<domain_name>/<ver>/tenants/<tenant_id>/<res_name>',
@@ -73,9 +73,9 @@ def delete(domain_name=None, ver=None, tenant_id=None,
     try:
         results = Manager.function_call(domain_name, ver, tenant_id, res_name, 'delete', res_id=uuid)
         return make_response(results[1], results[0])
-    except Exception as e:
+    except exception.CloudframeException as e:
         return make_response(jsonify({'error': e.message}),
-                             http_client.INTERNAL_SERVER_ERROR)
+                             e.code)
 
 
 app.wsgi_app = ProxyFix(app.wsgi_app)

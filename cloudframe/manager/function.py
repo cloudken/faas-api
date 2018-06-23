@@ -8,14 +8,17 @@ from cloudframe.driver.docker import Instance
 
 Fun_list = ['get', 'post', 'put', 'delete']
 Resources = {
-    'dom1_res1_v1': {'get': 'image1', 'post': 'image1', 'put': 'image1', 'delete': 'image1'},
-    'dom1_res2_v1': {'get': 'image2', 'post': 'image3', 'put': 'image3', 'delete': 'image3'},
-    'dom1_res2_v2': {'get': None, 'post': 'image4', 'put': None, 'delete': None},
+    'dom1_res01_v1': {'get': 'faas-worker:20180620', 'post': 'faas-worker:20180620', 'put': 'faas-worker:20180620', 'delete': 'faas-worker:20180620'},
+    'dom1_res02_v1': {'get': 'image2', 'post': 'image3', 'put': 'image3', 'delete': 'image3'},
+    'dom1_res02_v2': {'get': None, 'post': 'image4', 'put': None, 'delete': None},
 }
 
 MAX_INS = 10
-MIN_PORT = 1000
-MAX_PORT = 5000
+MIN_PORT = 30000
+MAX_PORT = 32000
+
+HOSTS = [
+    '10.63.133.170']
 
 
 class FunctionInstances(object):
@@ -23,7 +26,7 @@ class FunctionInstances(object):
         self.ins_list = {}
         self.port_idle_list = range(MIN_PORT, MAX_PORT, 1)
         self.port_busy_list = []
-        self.driver = Instance()
+        self.driver = Instance(hosts=HOSTS)
 
     def _get_image(self, domain, version, res, opr, num):
         if num > MAX_INS:

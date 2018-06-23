@@ -1,0 +1,23 @@
+---
+- hosts: nodes
+  remote_user: cloud
+  become: yes
+  become_method: sudo
+
+  vars_files:
+  - vars.yml
+  
+  tasks:
+  - name: FaaS-worker container
+    docker:
+      name: "{{deploy_name}}"
+      image: "{{deploy_image}}"
+      state: started
+      insecure_registry: yes
+      restart_policy: always
+      expose:
+      - 50051
+      ports:
+      - "{{host_port}}:50051"
+
+      
