@@ -7,26 +7,17 @@ from cloudframe.common.utils import execute
 from cloudframe.common.utils import generate_uuid
 
 LOG = logging.getLogger(__name__)
-REGISTRY_IP = '10.62.99.232'
-REGISTRY_PORT = 5000
 
 
 class Instance(object):
-    def __init__(self, hosts, registry_ip=None, registry_port=None, ):
-        if registry_ip is None:
-            self.registry_ip = REGISTRY_IP
-        else:
-            self.registry_ip = registry_ip
-        if registry_port is None:
-            self.registry_port = REGISTRY_PORT
-        else:
-            self.registry_port = registry_port
+    def __init__(self, hosts, registry_info):
+        self.registry = registry_info
         self.hosts = hosts
 
     def create(self, app_info, port):
         num = random.randint(0, len(self.hosts) - 1)
         host = self.hosts[num]
-        image = self.registry_ip + ':' + str(self.registry_port) + '/' + app_info
+        image = self.registry + '/' + app_info
         name = 'faas-worker-' + generate_uuid()
         self._create_instance(name, image, host, port)
         ack = {

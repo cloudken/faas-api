@@ -1,4 +1,5 @@
 
+import exceptions
 from six.moves import http_client
 import logging
 import time
@@ -23,6 +24,7 @@ DEFAULT_FAAS = {
 DEFAULT_HOSTS = [
     {'host_ip': '192.168.1.1', 'host_par': '192.168.1.1'}
 ]
+DEFAULT_REGISTRY = '10.62.99.232:5000'
 
 MAX_INS = 5
 MIN_PORT = 30000
@@ -38,17 +40,26 @@ class FunctionInstances(object):
         self.port_busy_list = []
         try:
             hc = HostConfig(HOST_CONFIG)
-            hosts = hc.get_hosts()
-            self.driver = Instance(hosts=hosts)
-        except:
-            # LOG.error('Read host config error, file is %(config)s.', {'config': HOST_CONFIG})
-            self.driver = Instance(hosts=DEFAULT_HOSTS)
+            rv = hc.get_hosts()
+            self.hosts = rv[0]
+            self.registry = rv[1]
+        except exceptions.Exception as e:
+            LOG.error('Read host_config(%(config)s) failed, error_info: %(error)s',
+                      {'config': HOST_CONFIG, 'error': e.message})
+            self.hosts = DEFAULT_HOSTS
+            self.registry = DEFAULT_REGISTRY
+        self.driver = Instance(self.hosts, self.registry)
         try:
             self.faas = {}
             fc = FaasConfig()
             fc.get_faas_from_path(FAAS_CONFIG_PATH, self.faas)
-        except:
+        except exceptions.Exception as e:
+            LOG.error('Read faas_config(%(config)s) failed, error_info: %(error)s',
+                      {'config': FAAS_CONFIG_PATH, 'error': e.message})
             self.faas = DEFAULT_FAAS
+        LOG.debug('---- config info ----')
+        LOG.debug('---- registry: %(registry)s', {'registry': self.registry})
+        LOG.debug('---- hosts: %(hosts)s', {'hosts': self.hosts})
 
     def _get_image(self, domain, version, res, opr, num):
         if num > MAX_INS:

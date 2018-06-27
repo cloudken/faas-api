@@ -14,6 +14,7 @@ class TestHostConfigServers(testtools.TestCase):
         config_file = 'host.conf'
         fo = open(config_file, 'w')
         fo.write("[default]\n")
+        fo.write("registry_info = 10.62.99.232:5000\n")
         fo.write("host_num = 2\n")
         fo.write("\n")
         fo.write("[host1]\n")
@@ -29,11 +30,14 @@ class TestHostConfigServers(testtools.TestCase):
 
         # testing
         hc = HostConfig(config_file)
-        hosts = hc.get_hosts()
+        result = hc.get_hosts()
         os.remove(config_file)
 
         # output
+        hosts = result[0]
+        registry = result[1]
         self.assertEqual(2, len(hosts))
+        self.assertEqual('10.62.99.232:5000', registry)
         self.assertEqual('192.168.1.1', hosts[0]['host_ip'])
         self.assertEqual('192.168.1.1 ansible_user=cloud ansible_ssh_pass=cloud ansible_become_pass=cloud', hosts[0]['host_par'])
         self.assertEqual('192.168.1.2', hosts[1]['host_ip'])

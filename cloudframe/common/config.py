@@ -26,10 +26,11 @@ class HostConfig(object):
 
     def get_hosts(self):
         num = self._get_hostnum()
+        registry_info = self.config.get('default', 'registry_info')
         hosts = []
         for index in range(num):
             hosts.append(self._get_hostinfo(index + 1))
-        return hosts
+        return hosts, registry_info
 
 
 class FaasConfig(object):
