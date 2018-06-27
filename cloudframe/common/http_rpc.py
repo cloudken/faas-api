@@ -2,7 +2,7 @@ import httplib2
 import json
 from six.moves import http_client
 
-from restframe.common import exception
+from cloudframe.common import exception
 
 
 class hrpc(object):

@@ -32,7 +32,7 @@ class Instance(object):
         ack = {
             'name': name,
             'image': image,
-            'host_ip': host,
+            'host_ip': host['host_ip'],
             'host_port': port,
             'status': 'OK'
         }
@@ -40,15 +40,16 @@ class Instance(object):
 
     def _create_instance(self, name, image, host, port):
         LOG.debug('Create instance %(name)s, port %(port)d for image %(image)s on host %(host)s begin...',
-                  {'name': name, 'port': port, 'image': image, 'host': host})
+                  {'name': name, 'port': port, 'image': image, 'host': host['host_ip']})
 
         # host
-        host_str = host + ' ansible_ssh_pass=cloud ansible_become_pass=cloud'
+        # host_str = host + ' ansible_ssh_pass=cloud ansible_become_pass=cloud'
+        host_par = host['host_par']
         base_path = '/root/faas/worker-deploy/'
         hosts_file = base_path + 'hosts'
         fo = open(hosts_file, 'w')
         fo.write("[nodes]\n")
-        fo.write(host_str)
+        fo.write(host_par)
         fo.flush()
         fo.close()
 

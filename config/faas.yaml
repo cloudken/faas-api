@@ -1,0 +1,24 @@
+---
+image_name: faas-worker:20180620
+domain: dom1
+
+resources: 
+  - name: res01
+    version: v1
+    functions:
+      - name: get
+      - name: post
+      - name: put
+      - name: delete
+
+  - name: res01
+    version: v2
+    functions:
+      - name: get
+
+  - name: res02
+    version: v1
+    functions:
+      - name: get
+      - name: post
+      - name: delete

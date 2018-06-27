@@ -1,6 +1,5 @@
 ---
 - hosts: nodes
-  remote_user: cloud
   become: yes
   become_method: sudo
 

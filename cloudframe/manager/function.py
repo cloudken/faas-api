@@ -1,24 +1,34 @@
 
 from six.moves import http_client
+import logging
 import time
 
 from cloudframe.common import exception
+from cloudframe.common.config import HostConfig
+from cloudframe.common.config import FaasConfig
 from cloudframe.common.rpc import MyRPC
 from cloudframe.driver.docker import Instance
 
-Fun_list = ['get', 'post', 'put', 'delete']
-Resources = {
-    'dom1_res01_v1': {'get': 'faas-worker:20180620', 'post': 'faas-worker:20180620', 'put': 'faas-worker:20180620', 'delete': 'faas-worker:20180620'},
-    'dom1_res02_v1': {'get': 'image2', 'post': 'image3', 'put': 'image3', 'delete': 'image3'},
-    'dom1_res02_v2': {'get': None, 'post': 'image4', 'put': None, 'delete': None},
-}
+LOG = logging.getLogger(__name__)
 
-MAX_INS = 10
+Fun_list = ['get', 'post', 'put', 'delete']
+DEFAULT_FAAS = {
+    'dom1_res01_v1_get': 'faas-worker:20180620',
+    'dom1_res01_v1_post': 'faas-worker:20180620',
+    'dom1_res01_v1_put': 'faas-worker:20180620',
+    'dom1_res01_v1_delete': 'faas-worker:20180620',
+    'dom1_res02_v1_get': 'image2',
+    'dom1_res02_v2_get': None,
+}
+DEFAULT_HOSTS = [
+    {'host_ip': '192.168.1.1', 'host_par': '192.168.1.1'}
+]
+
+MAX_INS = 5
 MIN_PORT = 30000
 MAX_PORT = 32000
-
-HOSTS = [
-    '10.63.133.170']
+HOST_CONFIG = '/root/faas/config/docker_host.conf'
+FAAS_CONFIG_PATH = '/root/faas/worker_config'
 
 
 class FunctionInstances(object):
@@ -26,18 +36,31 @@ class FunctionInstances(object):
         self.ins_list = {}
         self.port_idle_list = range(MIN_PORT, MAX_PORT, 1)
         self.port_busy_list = []
-        self.driver = Instance(hosts=HOSTS)
+        try:
+            hc = HostConfig(HOST_CONFIG)
+            hosts = hc.get_hosts()
+            self.driver = Instance(hosts=hosts)
+        except:
+            # LOG.error('Read host config error, file is %(config)s.', {'config': HOST_CONFIG})
+            self.driver = Instance(hosts=DEFAULT_HOSTS)
+        try:
+            self.faas = {}
+            fc = FaasConfig()
+            fc.get_faas_from_path(FAAS_CONFIG_PATH, self.faas)
+        except:
+            self.faas = DEFAULT_FAAS
 
     def _get_image(self, domain, version, res, opr, num):
         if num > MAX_INS:
             raise exception.ParameterInvalid(key='num', value=num)
-        res_name = domain + '_' + res + '_' + version
-        if res_name not in Resources:
-            raise exception.ObjectNotFound(object=res_name)
         fun_name = str.lower(opr)
         if fun_name not in Fun_list:
             raise exception.ParameterInvalid(key='function', value=fun_name)
-        image_info = Resources[res_name][fun_name]
+        res_name = domain + '_' + res + '_' + version + '_' + fun_name
+        if res_name not in self.faas:
+            raise exception.ObjectNotFound(object=res_name)
+
+        image_info = self.faas[res_name]
         if image_info is None:
             raise exception.ImageNotFound(res=res_name, opr=fun_name)
         return image_info
