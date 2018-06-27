@@ -1,11 +1,17 @@
 
-import ConfigParser
+try:
+    import configparser as ConfigParser
+except Exception:
+    import ConfigParser
+
 import os
 import yaml
 
 
 class HostConfig(object):
     def __init__(self, filename):
+        if not os.path.exists(filename):
+            raise Exception('File not exist.')
         self.filename = filename
         self.config = ConfigParser.ConfigParser()
         self.config.read(self.filename)
@@ -38,6 +44,8 @@ class FaasConfig(object):
         self.fun_list = fun_list
 
     def get_faas_from_path(self, path, faas):
+        if not os.path.exists(path):
+            raise Exception('Path not exist.')
         for dirpath, dirnames, filenames in os.walk(path):
             dirnames = dirnames
             for name in filenames:

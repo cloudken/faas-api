@@ -1,5 +1,4 @@
 
-import exceptions
 from six.moves import http_client
 import logging
 import time
@@ -36,26 +35,26 @@ FAAS_CONFIG_PATH = '/root/faas/worker_config'
 class FunctionInstances(object):
     def __init__(self):
         self.ins_list = {}
-        self.port_idle_list = range(MIN_PORT, MAX_PORT, 1)
+        self.port_idle_list = list(range(MIN_PORT, MAX_PORT, 1))
         self.port_busy_list = []
         try:
             hc = HostConfig(HOST_CONFIG)
             rv = hc.get_hosts()
             self.hosts = rv[0]
             self.registry = rv[1]
-        except exceptions.Exception as e:
+        except Exception as e:
             LOG.error('Read host_config(%(config)s) failed, error_info: %(error)s',
-                      {'config': HOST_CONFIG, 'error': e.message})
+                      {'config': HOST_CONFIG, 'error': e})
             self.hosts = DEFAULT_HOSTS
             self.registry = DEFAULT_REGISTRY
         self.driver = Instance(self.hosts, self.registry)
         try:
             self.faas = {}
-            fc = FaasConfig()
+            fc = FaasConfig(Fun_list)
             fc.get_faas_from_path(FAAS_CONFIG_PATH, self.faas)
-        except exceptions.Exception as e:
+        except Exception as e:
             LOG.error('Read faas_config(%(config)s) failed, error_info: %(error)s',
-                      {'config': FAAS_CONFIG_PATH, 'error': e.message})
+                      {'config': FAAS_CONFIG_PATH, 'error': e})
             self.faas = DEFAULT_FAAS
         LOG.debug('---- config info ----')
         LOG.debug('---- registry: %(registry)s', {'registry': self.registry})
@@ -82,7 +81,7 @@ class FunctionInstances(object):
             self.port_busy_list.append(port)
             ins_data = self.driver.create(image_name, port)
             return ins_data
-        except:
+        except Exception:
             raise exception.CreateError(object=image_name)
 
     def _check_ins(self, ins_data):
@@ -93,7 +92,7 @@ class FunctionInstances(object):
                 return True
             else:
                 return False
-        except:
+        except Exception:
             return False
 
     def _delete_ins(self, ins_name):
