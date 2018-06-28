@@ -5,7 +5,7 @@ import testtools
 import yaml
 
 from cloudframe.common.config import FaasConfig
-from cloudframe.manager.function import Fun_list
+from cloudframe.manager.function import FUN_LIST
 
 
 class TestHostConfigServers(testtools.TestCase):
@@ -74,7 +74,7 @@ class TestHostConfigServers(testtools.TestCase):
         fo.close()
 
         # testing
-        fc = FaasConfig(Fun_list)
+        fc = FaasConfig(FUN_LIST)
         faas = {}
         fc.get_faas_from_path(path, faas)
         shutil.rmtree(path)

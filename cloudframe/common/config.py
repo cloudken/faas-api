@@ -30,13 +30,17 @@ class HostConfig(object):
                 host_info['host_par'] += ' ' + item[0] + '=' + item[1]
         return host_info
 
-    def get_hosts(self):
+    def get_host_info(self):
+        host_global = {}
+        host_global['registry'] = self.config.get('default', 'registry')
+        host_global['min_port'] = self.config.getint('default', 'min_port')
+        host_global['max_port'] = self.config.getint('default', 'max_port')
+
         num = self._get_hostnum()
-        registry_info = self.config.get('default', 'registry_info')
         hosts = []
         for index in range(num):
             hosts.append(self._get_hostinfo(index + 1))
-        return hosts, registry_info
+        return hosts, host_global
 
 
 class FaasConfig(object):

@@ -8,3 +8,4 @@ pbr
 six
 oslo_concurrency
 grpcio
+protobuf

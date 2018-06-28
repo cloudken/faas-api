@@ -2,7 +2,8 @@
 import random
 
 from cloudframe.manager.function import FunctionInstances
-from cloudframe.manager.function import MAX_INS
+
+MAX_INS = 5
 
 
 class FunctionScheduler(FunctionInstances):
