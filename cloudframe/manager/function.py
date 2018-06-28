@@ -60,7 +60,8 @@ class FunctionInstances(object):
         self.port_busy_list = []
         LOG.debug('---- config info ----')
         LOG.debug('---- global: %(global)s', {'global': self.host_global})
-        LOG.debug('---- hosts: %(hosts)s', {'hosts': self.hosts})
+        for host in self.hosts:
+            LOG.debug('---- host: %(host)s', {'hosts': host})
 
     def _get_image(self, domain, version, res, opr, num):
         if num > MAX_INS:
@@ -93,8 +94,12 @@ class FunctionInstances(object):
             if ack[0] is http_client.OK:
                 return True
             else:
+                LOG.error('Call heartbeat for [%(name)s, %(host_ip)s] failed, result_code is %(code)d.',
+                          {'name': ins_data['name'], 'host_ip': ins_data['host_ip'], 'code': ack[0]})
                 return False
-        except Exception:
+        except Exception as e:
+            LOG.error('Call heartbeat for [%(name)s, %(host_ip)s] failed, error_info: %(error)s',
+                      {'name': ins_data['name'], 'host_ip': ins_data['host_ip'], 'error': e})
             return False
 
     def _delete_ins(self, ins_name):

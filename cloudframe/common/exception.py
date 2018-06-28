@@ -100,3 +100,8 @@ class CreateError(CloudframeException):
 class ImageNotFound(CloudframeException):
     message = "Image for [%(res)s, %(opr)s] could not be found."
     code = http_client.NOT_FOUND
+
+
+class RpcCallFailed(CloudframeException):
+    message = "RPC call %(type)s failed, %(error)s"
+    code = http_client.INTERNAL_SERVER_ERROR
