@@ -128,6 +128,8 @@ class FunctionInstances(object):
             if self._check_ins(ins_data):
                 ins_name = image_name + '_' + str(num)
                 self.ins_list[ins_name] = ins_data
+                LOG.debug('Create FaaS-instance success, info: %(info)s',
+                          {'info': ins_data})
                 return ins_data
             time.sleep(index)
         raise exception.CreateError(object=image_name)
