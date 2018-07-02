@@ -61,7 +61,7 @@ class FunctionInstances(object):
         LOG.debug('---- config info ----')
         LOG.debug('---- global: %(global)s', {'global': self.host_global})
         for host in self.hosts:
-            LOG.debug('---- host: %(host)s', {'hosts': host})
+            LOG.debug('---- host: %(host)s', {'host': host})
 
     def _get_image(self, domain, version, res, opr, num):
         if num > MAX_INS:
