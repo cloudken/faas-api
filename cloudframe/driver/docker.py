@@ -1,7 +1,9 @@
 
 import fileinput
 import logging
+import os
 import random
+import shutil
 
 from cloudframe.common.utils import execute
 from cloudframe.common.utils import generate_uuid
@@ -60,10 +62,19 @@ class Instance(object):
         LOG.debug('Create instance %(name)s, port %(port)d for image %(image)s on host %(host)s begin...',
                   {'name': name, 'port': port, 'image': image, 'host': host['host_ip']})
 
+        # mkdir and copy files
+        src_path = '/root/faas/deploy/'
+        base_path = src_path + name + '/'
+        if not os.path.exists(base_path):
+            os.makedirs(base_path)
+        src_file = src_path + 'vars.yml'
+        shutil.copy(src_file, base_path)
+        src_file = src_path + 'image_deploy.yml'
+        shutil.copy(src_file, base_path)
+
         # host
         # host_str = host + ' ansible_ssh_pass=cloud ansible_become_pass=cloud'
         host_par = host['host_par']
-        base_path = '/root/faas/deploy/'
         hosts_file = base_path + 'hosts'
         fo = open(hosts_file, 'w')
         fo.write("[nodes]\n")
@@ -89,4 +100,6 @@ class Instance(object):
         execute('ansible-playbook', ans_file, '-i', hosts_file,
                 check_exit_code=[0], run_as_root=True)
 
+        # remove dir
+        shutil.rmtree(base_path)
         LOG.debug('Create instance %(name)s end.', {'name': name})

@@ -13,7 +13,6 @@
       name: "{{deploy_name}}"
       image: "{{deploy_image}}"
       state: started
-      insecure_registry: yes
       restart_policy: always
       volumes:
       - "/root/faas/cf-base/usr:/usr"
