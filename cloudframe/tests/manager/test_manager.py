@@ -10,10 +10,15 @@ from cloudframe.common.rpc import MyRPC
 
 
 class TestManagerServers(testtools.TestCase):
-    manager = FunctionManager()
-
     def setUp(self):
         super(TestManagerServers, self).setUp()
+        self._patcher = mock.patch.object(Instance, '_deploy_host')
+        self._patcher.start()
+        self.manager = FunctionManager()
+
+    def tearDown(self):
+        super(TestManagerServers, self).tearDown()
+        self._patcher.stop()
 
     @mock.patch.object(Instance, '_create_instance')
     @mock.patch.object(MyRPC, 'call_function')

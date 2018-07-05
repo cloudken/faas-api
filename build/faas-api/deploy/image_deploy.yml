@@ -2,21 +2,22 @@
 - hosts: nodes
   become: yes
   become_method: sudo
+  gather_facts: no
 
   vars_files:
   - vars.yml
   
   tasks:
   - name: FaaS-worker container
-    docker:
+    docker_container:
       name: "{{deploy_name}}"
       image: "{{deploy_image}}"
       state: started
       insecure_registry: yes
       restart_policy: always
+      volumes:
+      - "/root/faas/cf-base/usr:/usr"
       expose:
       - 50051
       ports:
       - "{{host_port}}:50051"
-
-      

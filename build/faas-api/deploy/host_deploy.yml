@@ -1,0 +1,17 @@
+---
+- hosts: nodes
+  become: yes
+  become_method: sudo
+  gather_facts: no
+
+  vars_files:
+  - host_vars.yml
+  
+  tasks:
+  - name: create cf-base path
+    file: path={{dest_path}}/cf-base state=directory mode=0755
+  - name: unarchive volume cf-base
+    unarchive: src={{src_path}}/cf-base.tar.gz dest={{dest_path}}/cf-base copy=yes
+  
+
+      

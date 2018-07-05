@@ -8,15 +8,47 @@ from cloudframe.common.utils import generate_uuid
 
 LOG = logging.getLogger(__name__)
 
+HOST_OK = 'host ok'
+HOST_ERROR = 'host error'
+
 
 class Instance(object):
     def __init__(self, hosts, registry_info):
         self.registry = registry_info
-        self.hosts = hosts
+        self.hosts_ok = []
+        self.hosts_error = []
+        for host in hosts:
+            try:
+                self._deploy_host(host)
+                self.hosts_ok.append(host)
+            except Exception as e:
+                LOG.error('Deploy host_%(host)s failed, error_info: %(error)s',
+                          {'host': host['host_ip'], 'error': e})
+                self.hosts_error.append(host)
+
+    def _deploy_host(self, host):
+        LOG.debug('Deploy host %(host)s begin...', {'host': host['host_ip']})
+
+        # host
+        host_par = host['host_par']
+        base_path = '/root/faas/deploy/'
+        hosts_file = base_path + 'hosts'
+        fo = open(hosts_file, 'w')
+        fo.write("[nodes]\n")
+        fo.write(host_par)
+        fo.flush()
+        fo.close()
+
+        # deploy
+        ans_file = base_path + 'host_deploy.yml'
+        execute('ansible-playbook', ans_file, '-i', hosts_file,
+                check_exit_code=[0], run_as_root=True)
+
+        LOG.debug('Deploy host %(host)s end.', {'host': host['host_ip']})
 
     def create(self, app_info, port):
-        num = random.randint(0, len(self.hosts) - 1)
-        host = self.hosts[num]
+        num = random.randint(0, len(self.hosts_ok) - 1)
+        host = self.hosts_ok[num]
         image = self.registry + '/' + app_info
         name = 'faas-worker-' + generate_uuid()
         self._create_instance(name, image, host, port)
@@ -36,7 +68,7 @@ class Instance(object):
         # host
         # host_str = host + ' ansible_ssh_pass=cloud ansible_become_pass=cloud'
         host_par = host['host_par']
-        base_path = '/root/faas/worker-deploy/'
+        base_path = '/root/faas/deploy/'
         hosts_file = base_path + 'hosts'
         fo = open(hosts_file, 'w')
         fo.write("[nodes]\n")
