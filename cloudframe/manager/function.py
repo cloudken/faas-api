@@ -33,6 +33,11 @@ MAX_INS = 10
 HOST_CONFIG = '/root/faas/config/docker_host.conf'
 FAAS_CONFIG_PATH = '/root/faas/config/worker_config'
 
+INS_STATUS_OK = 'ok'
+INS_STATUS_INIT = 'initializing'
+INS_STATUS_CHECKING = 'heartbeat checking'
+INS_STATUS_ERROR = 'error'
+
 
 class FunctionInstances(object):
     def __init__(self):
@@ -78,14 +83,14 @@ class FunctionInstances(object):
             raise exception.ImageNotFound(res=res_name, opr=fun_name)
         return image_info
 
-    def _launch_ins(self, image_name):
+    def _launch_ins(self, image_name, ins_data):
         try:
             port = self.port_idle_list.pop(len(self.port_idle_list) - 1)
             self.port_busy_list.append(port)
-            ins_data = self.driver.create(image_name, port)
-            return ins_data
+            ins_data['host_port'] = port
+            self.driver.create(image_name, port, ins_data)
         except Exception:
-            raise exception.CreateError(object=image_name)
+            ins_data['status'] = INS_STATUS_ERROR
 
     def _check_ins(self, ins_data):
         rpc = MyRPC(ins_data)
@@ -115,21 +120,37 @@ class FunctionInstances(object):
             return None
         else:
             ins_data = self.ins_list[ins_name]
-            if not self._check_ins(ins_data):
+            if ins_data['status'] == INS_STATUS_OK:
+                if not self._check_ins(ins_data):
+                    self._delete_ins(ins_name)
+                    return None
+                else:
+                    return ins_data
+            else:
+                for index in range(8):
+                    time.sleep(index)
+                    if ins_data['status'] == INS_STATUS_OK:
+                        return ins_data
                 self._delete_ins(ins_name)
                 return None
-            else:
-                return ins_data
 
     def create(self, domain, version, res, opr, num):
         image_name = self._get_image(domain, version, res, opr, num)
-        ins_data = self._launch_ins(image_name)
+        ins_name = image_name + '_' + str(num)
+        LOG.debug('Create FaaS-instance %(ins)s begin...', {'ins': ins_name})
+        ins_data = {'status': INS_STATUS_INIT}
+        self.ins_list[ins_name] = ins_data
+        self._launch_ins(image_name, ins_data)
+        if ins_data['status'] == INS_STATUS_ERROR:
+            self._delete_ins(ins_name)
+            raise exception.CreateError(object=image_name)
+        ins_data['status'] = INS_STATUS_CHECKING
         for index in range(5):
             if self._check_ins(ins_data):
-                ins_name = image_name + '_' + str(num)
-                self.ins_list[ins_name] = ins_data
+                ins_data['status'] = INS_STATUS_OK
                 LOG.debug('Create FaaS-instance success, info: %(info)s',
                           {'info': ins_data})
                 return ins_data
             time.sleep(index)
+        self._delete_ins(ins_name)
         raise exception.CreateError(object=image_name)

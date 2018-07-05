@@ -46,20 +46,15 @@ class Instance(object):
 
         LOG.debug('Deploy host %(host)s end.', {'host': host['host_ip']})
 
-    def create(self, app_info, port):
+    def create(self, app_info, port, ins_data):
         num = random.randint(0, len(self.hosts_ok) - 1)
         host = self.hosts_ok[num]
         image = self.registry + '/' + app_info
         name = 'faas-worker-' + generate_uuid()
         self._create_instance(name, image, host, port)
-        ack = {
-            'name': name,
-            'image': image,
-            'host_ip': host['host_ip'],
-            'host_port': port,
-            'status': 'OK'
-        }
-        return ack
+        ins_data['name'] = name
+        ins_data['image'] = image
+        ins_data['host_ip'] = host['host_ip']
 
     def _create_instance(self, name, image, host, port):
         LOG.debug('Create instance %(name)s, port %(port)d for image %(image)s on host %(host)s begin...',
