@@ -1,6 +1,7 @@
 ---
 - deploy_name: 
 - deploy_image: 
-- host_port: 
-- verbose: True
-- debug: True
+- host_port:
+- log_path:
+- life_cycle:
+- log_level: DEBUG

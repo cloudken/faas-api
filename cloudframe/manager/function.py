@@ -110,7 +110,7 @@ class FunctionInstances(object):
     def _delete_ins(self, ins_name):
         port = self.ins_list[ins_name]['host_port']
         self.port_busy_list.remove(port)
-        self.port_idle_list.append(port)
+        self.port_idle_list.insert(0, port)
         self.ins_list.pop(ins_name)
 
     def get(self, domain, version, res, opr, num):
@@ -148,8 +148,8 @@ class FunctionInstances(object):
         for index in range(5):
             if self._check_ins(ins_data):
                 ins_data['status'] = INS_STATUS_OK
-                LOG.debug('Create FaaS-instance success, info: %(info)s',
-                          {'info': ins_data})
+                LOG.debug('Create FaaS-instance %(ins)s success, info: %(info)s',
+                          {'ins': ins_name, 'info': ins_data})
                 return ins_data
             time.sleep(index)
         self._delete_ins(ins_name)

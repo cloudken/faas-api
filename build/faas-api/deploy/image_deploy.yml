@@ -13,10 +13,14 @@
       name: "{{deploy_name}}"
       image: "{{deploy_image}}"
       state: started
-      restart_policy: always
+      restart_policy: no
       volumes:
-      - "/root/faas/cf-base/usr:/usr"
+      - "/root/faas/cf-base/usr:/usr:ro"
+      - "{{log_path}}:/var/log/cloudframe"
       expose:
       - 50051
       ports:
       - "{{host_port}}:50051"
+      env:
+        LOG_LEVEL: "{{log_level}}"
+        LIFE_CYCLE: "{{life_cycle}}"

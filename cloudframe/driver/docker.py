@@ -84,6 +84,8 @@ class Instance(object):
 
         # vars
         vars_file = base_path + 'vars.yml'
+        log_path = '/root/faas/logs/' + name
+        life_cycle = 60
         for line in fileinput.input(vars_file, inplace=1):
             line = line.strip()
             strs = line.split(':')
@@ -93,6 +95,10 @@ class Instance(object):
                 line = strs[0] + ': ' + name
             if 'host_port' in strs[0]:
                 line = strs[0] + ': ' + str(port)
+            if 'log_path' in strs[0]:
+                line = strs[0] + ': ' + log_path
+            if 'life_cycle' in strs[0]:
+                line = strs[0] + ': ' + str(life_cycle)
             print(line)
 
         # deploy
