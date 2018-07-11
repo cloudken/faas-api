@@ -1,5 +1,6 @@
 
 from six.moves import http_client
+from datetime import datetime
 import logging
 import time
 
@@ -37,6 +38,7 @@ INS_STATUS_OK = 'ok'
 INS_STATUS_INIT = 'initializing'
 INS_STATUS_CHECKING = 'heartbeat checking'
 INS_STATUS_ERROR = 'error'
+INS_STATUS_END = 'end'
 
 
 class FunctionInstances(object):
@@ -61,6 +63,7 @@ class FunctionInstances(object):
                       {'config': FAAS_CONFIG_PATH, 'error': e})
             self.faas = DEFAULT_FAAS
         self.ins_list = {}
+        self.finished_ins_list = []
         self.port_idle_list = list(range(self.host_global['min_port'], self.host_global['max_port'], 1))
         self.port_busy_list = []
         LOG.debug('---- config info ----')
@@ -111,7 +114,10 @@ class FunctionInstances(object):
         port = self.ins_list[ins_name]['host_port']
         self.port_busy_list.remove(port)
         self.port_idle_list.insert(0, port)
-        self.ins_list.pop(ins_name)
+        ins_data = self.ins_list.pop(ins_name)
+        ins_data['status'] = INS_STATUS_END
+        ins_data['finished_at'] = datetime.now()
+        self.finished_ins_list.append(ins_data)
 
     def get(self, domain, version, res, opr, num):
         image_name = self._get_image(domain, version, res, opr, num)
@@ -138,7 +144,11 @@ class FunctionInstances(object):
         image_name = self._get_image(domain, version, res, opr, num)
         ins_name = image_name + '_' + str(num)
         LOG.debug('Create FaaS-instance %(ins)s begin...', {'ins': ins_name})
-        ins_data = {'status': INS_STATUS_INIT}
+        ins_data = {
+            'name': 'no name',
+            'created_at': datetime.now(),
+            'status': INS_STATUS_INIT
+        }
         self.ins_list[ins_name] = ins_data
         self._launch_ins(image_name, ins_data)
         if ins_data['status'] == INS_STATUS_ERROR:
@@ -148,6 +158,7 @@ class FunctionInstances(object):
         for index in range(5):
             if self._check_ins(ins_data):
                 ins_data['status'] = INS_STATUS_OK
+                ins_data['started_at'] = datetime.now()
                 LOG.debug('Create FaaS-instance %(ins)s success, info: %(info)s',
                           {'ins': ins_name, 'info': ins_data})
                 return ins_data
