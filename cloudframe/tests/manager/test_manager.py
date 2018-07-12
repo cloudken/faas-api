@@ -102,3 +102,20 @@ class TestManagerServers(testtools.TestCase):
         opr = 'write'
         req = {'name': 'server 1'}
         self.assertRaises(exception.ParameterInvalid, self.manager.function_call, domain, version, tenant, res, opr, req)
+
+    @mock.patch.object(Instance, '_create_instance')
+    @mock.patch.object(MyRPC, 'call_function')
+    @mock.patch.object(MyRPC, 'call_heartbeat')
+    def test_function_call_twice(self, mock_ch, mock_cf, mock_ci):
+        domain = 'dom1'
+        version = 'v1'
+        tenant = 'tenant'
+        res = 'res01'
+        opr = 'post'
+        req = {'name': 'server 1'}
+        ack = {'result': 'OK'}
+        mock_cf.side_effect = [[1033, {'result': 'deadline is comming.'}], [http_client.OK, ack]]
+        mock_ch.return_value = http_client.OK, ack
+        rv = self.manager.function_call(domain, version, tenant, res, opr, req)
+        self.assertEqual(http_client.OK, rv[0])
+        self.assertEqual(ack, rv[1])

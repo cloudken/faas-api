@@ -13,6 +13,9 @@ LOG = logging.getLogger(__name__)
 HOST_OK = 'host ok'
 HOST_ERROR = 'host error'
 
+WORKER_LOG_LEVEL = 'DEBUG'
+WORKER_LIFE_CYCLE = 60
+
 
 class Instance(object):
     def __init__(self, hosts, registry_info):
@@ -85,7 +88,6 @@ class Instance(object):
         # vars
         vars_file = base_path + 'vars.yml'
         log_path = '/root/faas/logs/' + name
-        life_cycle = 60
         for line in fileinput.input(vars_file, inplace=1):
             line = line.strip()
             strs = line.split(':')
@@ -98,7 +100,9 @@ class Instance(object):
             if 'log_path' in strs[0]:
                 line = strs[0] + ': ' + log_path
             if 'life_cycle' in strs[0]:
-                line = strs[0] + ': ' + str(life_cycle)
+                line = strs[0] + ': ' + str(WORKER_LIFE_CYCLE)
+            if 'log_level' in strs[0]:
+                line = strs[0] + ': ' + WORKER_LOG_LEVEL
             print(line)
 
         # deploy

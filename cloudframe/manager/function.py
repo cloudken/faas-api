@@ -29,7 +29,8 @@ DEFAULT_HOST_GLOBAL = {
     'min_port': 30000,
     'max_port': 32000,
 }
-MAX_INS = 10
+
+MAX_INS = 20
 
 HOST_CONFIG = '/root/faas/config/docker_host.conf'
 FAAS_CONFIG_PATH = '/root/faas/config/worker_config'
@@ -39,6 +40,7 @@ INS_STATUS_INIT = 'initializing'
 INS_STATUS_CHECKING = 'heartbeat checking'
 INS_STATUS_ERROR = 'error'
 INS_STATUS_END = 'end'
+INS_STATUS_DYING = 'dying'
 
 
 class FunctionInstances(object):
@@ -118,6 +120,8 @@ class FunctionInstances(object):
         ins_data['status'] = INS_STATUS_END
         ins_data['finished_at'] = datetime.now()
         self.finished_ins_list.append(ins_data)
+        LOG.debug('FaaS-instance %(ins)s should be finished, info: %(info)s',
+                  {'ins': ins_name, 'info': ins_data})
 
     def get(self, domain, version, res, opr, num):
         image_name = self._get_image(domain, version, res, opr, num)
@@ -132,11 +136,14 @@ class FunctionInstances(object):
                     return None
                 else:
                     return ins_data
-            else:
+            elif ins_data['status'] == INS_STATUS_INIT or ins_data['status'] == INS_STATUS_CHECKING:
                 for index in range(8):
                     time.sleep(index)
                     if ins_data['status'] == INS_STATUS_OK:
                         return ins_data
+                self._delete_ins(ins_name)
+                return None
+            else:
                 self._delete_ins(ins_name)
                 return None
 
@@ -165,3 +172,6 @@ class FunctionInstances(object):
             time.sleep(index)
         self._delete_ins(ins_name)
         raise exception.CreateError(object=image_name)
+
+    def set_worker_dying(self, ins_data):
+        ins_data['status'] = INS_STATUS_DYING

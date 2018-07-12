@@ -2,7 +2,8 @@
 from cloudframe.manager.scheduler import FunctionScheduler
 from cloudframe.common.rpc import MyRPC
 
-MAX_RETRY = 3
+MAX_RETRY = 5
+FAAS_DYING = 1033
 
 
 class FunctionManager(object):
@@ -15,4 +16,8 @@ class FunctionManager(object):
             worker_data = self.scheduler.get_worker(domain, version, res, opr)
             if worker_data is not None:
                 rpc = MyRPC(worker_data)
-                return rpc.call_function(opr, tenant, version, res, res_id, req)
+                rv = rpc.call_function(opr, tenant, version, res, res_id, req)
+                if rv[0] == FAAS_DYING:
+                    self.scheduler.set_worker_dying(worker_data)
+                else:
+                    return rv
