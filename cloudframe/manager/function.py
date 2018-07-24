@@ -98,7 +98,7 @@ class FunctionInstances(object):
             ins_data['status'] = INS_STATUS_ERROR
 
     def _check_ins(self, ins_data):
-        rpc = MyRPC(ins_data)
+        rpc = ins_data['rpc']
         try:
             ack = rpc.call_heartbeat()
             if ack[0] is http_client.OK:
@@ -130,12 +130,10 @@ class FunctionInstances(object):
             return None
         else:
             ins_data = self.ins_list[ins_name]
+            LOG.debug('FaaS-instance get, name: %(ins)s, info: %(info)s',
+                      {'ins': ins_name, 'info': ins_data})
             if ins_data['status'] == INS_STATUS_OK:
-                if not self._check_ins(ins_data):
-                    self._delete_ins(ins_name)
-                    return None
-                else:
-                    return ins_data
+                return ins_data
             elif ins_data['status'] == INS_STATUS_INIT or ins_data['status'] == INS_STATUS_CHECKING:
                 for index in range(8):
                     time.sleep(index)
@@ -162,6 +160,7 @@ class FunctionInstances(object):
             self._delete_ins(ins_name)
             raise exception.CreateError(object=image_name)
         ins_data['status'] = INS_STATUS_CHECKING
+        ins_data['rpc'] = MyRPC(ins_data)
         for index in range(5):
             if self._check_ins(ins_data):
                 ins_data['status'] = INS_STATUS_OK
@@ -175,3 +174,4 @@ class FunctionInstances(object):
 
     def set_worker_dying(self, ins_data):
         ins_data['status'] = INS_STATUS_DYING
+        LOG.debug('FaaS-instance set dying, info: %(info)s', {'info': ins_data})
