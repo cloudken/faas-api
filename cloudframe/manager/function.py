@@ -1,12 +1,13 @@
 
 from six.moves import http_client
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 import time
 
 from cloudframe.common import exception
 from cloudframe.common.config import HostConfig
 from cloudframe.common.config import FaasConfig
+from cloudframe.common.job import Tasks
 from cloudframe.common.rpc import MyRPC
 from cloudframe.driver.docker import Instance
 
@@ -73,6 +74,13 @@ class FunctionInstances(object):
         for host in self.hosts:
             LOG.debug('---- host: %(host)s', {'host': host})
 
+        delay = {
+            'checking_time': 30,
+            'aging_time': 300
+        }
+        item = [self._check_dead_worker, delay]
+        Tasks.put_nowait(item)
+
     def _get_image(self, domain, version, res, opr, num):
         if num > MAX_INS:
             raise exception.ParameterInvalid(key='num', value=num)
@@ -129,6 +137,14 @@ class FunctionInstances(object):
             LOG.error('Delete instance %(name)s failed, error_info: %(error)s',
                       {'name': ins_name, 'error': e})
 
+    def _destroy_ins(self, ins_data):
+        try:
+            LOG.debug('Destroy instance, info: %(info)s', {'info': ins_data})
+            self.driver.destroy(ins_data)
+            self.finished_ins_list.remove(ins_data)
+        except Exception as e:
+            LOG.error('Destroy instance failed, error_info: %(error)s', {'error': e})
+
     def get(self, domain, version, res, opr, num):
         image_name = self._get_image(domain, version, res, opr, num)
         ins_name = image_name + '_' + str(num)
@@ -172,6 +188,8 @@ class FunctionInstances(object):
                 ins_data['started_at'] = datetime.now()
                 LOG.debug('Create FaaS-instance %(ins)s success, info: %(info)s',
                           {'ins': ins_name, 'info': ins_data})
+                item = [self._check_worker_status, ins_name]
+                Tasks.put_nowait(item)
                 return ins_data
             time.sleep(index)
         self._delete_ins(ins_name)
@@ -180,3 +198,36 @@ class FunctionInstances(object):
     def set_worker_dying(self, ins_data):
         ins_data['status'] = INS_STATUS_DYING
         LOG.debug('FaaS-instance set dying, info: %(info)s', {'info': ins_data})
+
+    def _check_worker_status(self, ins_name):
+        LOG.debug('Checking worker %(name)s status...', {'name': ins_name})
+        if ins_name not in self.ins_list:
+            return
+        ins_data = self.ins_list[ins_name]
+        if ins_data['status'] == INS_STATUS_OK:
+            if self._check_ins(ins_data):
+                time.sleep(5)
+                item = [self._check_worker_status, ins_name]
+                Tasks.put_nowait(item)
+            else:
+                ins_data['status'] = INS_STATUS_DYING
+                item = [self._check_worker_status, ins_name]
+                Tasks.put_nowait(item)
+        elif ins_data['status'] in [INS_STATUS_INIT, INS_STATUS_CHECKING]:
+            time.sleep(5)
+            item = [self._check_worker_status, ins_name]
+            Tasks.put_nowait(item)
+        else:
+            self._delete_ins(ins_name)
+
+    def _check_dead_worker(self, delay):
+        while True:
+            time.sleep(delay['checking_time'])
+            LOG.debug('Checking dead worker...')
+            for ins in self.finished_ins_list:
+                current = datetime.now()
+                end = ins['finished_at']
+                interval = delay['aging_time']
+                if (current - end) > timedelta(seconds=interval):
+                    item = [self._destroy_ins, ins]
+                    Tasks.put_nowait(item)

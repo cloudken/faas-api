@@ -113,3 +113,51 @@ class Instance(object):
         # remove dir
         shutil.rmtree(base_path)
         LOG.debug('Create instance %(name)s end.', {'name': name})
+
+    def destroy(self, ins_data):
+        name = ins_data['name']
+        host_ip = ins_data['host_ip']
+        LOG.debug('Destroy instance %(name)s on host %(host)s begin...',
+                  {'name': name, 'host': host_ip})
+
+        # mkdir and copy files
+        src_path = '/root/faas/deploy/'
+        base_path = src_path + name + '/'
+        if not os.path.exists(base_path):
+            os.makedirs(base_path)
+        src_file = src_path + 'destroy_vars.yml'
+        shutil.copy(src_file, base_path)
+        src_file = src_path + 'instance_destroy.yml'
+        shutil.copy(src_file, base_path)
+
+        # host
+        # host_str = host + ' ansible_ssh_pass=cloud ansible_become_pass=cloud'
+        host_par = ''
+        for host in self.hosts_ok:
+            if host_ip == host['host_ip']:
+                host_par = host['host_par']
+                break
+        hosts_file = base_path + 'hosts'
+        fo = open(hosts_file, 'w')
+        fo.write("[nodes]\n")
+        fo.write(host_par)
+        fo.flush()
+        fo.close()
+
+        # vars
+        vars_file = base_path + 'destroy_vars.yml'
+        for line in fileinput.input(vars_file, inplace=1):
+            line = line.strip()
+            strs = line.split(':')
+            if 'instance_name' in strs[0]:
+                line = strs[0] + ': ' + name
+            print(line)
+
+        # destroy
+        ans_file = base_path + 'instance_destroy.yml'
+        execute('ansible-playbook', ans_file, '-i', hosts_file,
+                check_exit_code=[0], run_as_root=True)
+
+        # remove dir
+        shutil.rmtree(base_path)
+        LOG.debug('Delete instance %(name)s end.', {'name': name})

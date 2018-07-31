@@ -23,14 +23,17 @@ from gevent import monkey
 from gevent import pywsgi
 import logging
 
-# from cloudframe.common import job
+from cloudframe.common import job
 from cloudframe.api.flask_app import app
+
+LISTEN_PORT = 5000
+COROUTINES_NUM = 10
 
 
 def main():
     monkey.patch_all()
     LOG = logging.getLogger(__name__)
     LOG.debug("Starting...")
-    server = pywsgi.WSGIServer(('0.0.0.0', 5000), app)
-    # job.start_worker(5)
+    server = pywsgi.WSGIServer(('0.0.0.0', LISTEN_PORT), app)
+    job.start_worker(COROUTINES_NUM)
     server.serve_forever()
