@@ -94,12 +94,14 @@ class FunctionInstances(object):
             self.port_busy_list.append(port)
             ins_data['host_port'] = port
             self.driver.create(image_name, port, ins_data)
-        except Exception:
+        except Exception as e:
             ins_data['status'] = INS_STATUS_ERROR
+            LOG.error('Launch instance %(name)s failed, error_info: %(error)s',
+                      {'name': image_name, 'error': e})
 
     def _check_ins(self, ins_data):
-        rpc = ins_data['rpc']
         try:
+            rpc = MyRPC(ins_data)
             ack = rpc.call_heartbeat()
             if ack[0] is http_client.OK:
                 return True
@@ -113,15 +115,19 @@ class FunctionInstances(object):
             return False
 
     def _delete_ins(self, ins_name):
-        port = self.ins_list[ins_name]['host_port']
-        self.port_busy_list.remove(port)
-        self.port_idle_list.insert(0, port)
-        ins_data = self.ins_list.pop(ins_name)
-        ins_data['status'] = INS_STATUS_END
-        ins_data['finished_at'] = datetime.now()
-        self.finished_ins_list.append(ins_data)
-        LOG.debug('FaaS-instance %(ins)s should be finished, info: %(info)s',
-                  {'ins': ins_name, 'info': ins_data})
+        try:
+            port = self.ins_list[ins_name]['host_port']
+            self.port_busy_list.remove(port)
+            self.port_idle_list.insert(0, port)
+            ins_data = self.ins_list.pop(ins_name)
+            ins_data['status'] = INS_STATUS_END
+            ins_data['finished_at'] = datetime.now()
+            self.finished_ins_list.append(ins_data)
+            LOG.debug('FaaS-instance %(ins)s should be finished, info: %(info)s',
+                      {'ins': ins_name, 'info': ins_data})
+        except Exception as e:
+            LOG.error('Delete instance %(name)s failed, error_info: %(error)s',
+                      {'name': ins_name, 'error': e})
 
     def get(self, domain, version, res, opr, num):
         image_name = self._get_image(domain, version, res, opr, num)
@@ -160,7 +166,6 @@ class FunctionInstances(object):
             self._delete_ins(ins_name)
             raise exception.CreateError(object=image_name)
         ins_data['status'] = INS_STATUS_CHECKING
-        ins_data['rpc'] = MyRPC(ins_data)
         for index in range(5):
             if self._check_ins(ins_data):
                 ins_data['status'] = INS_STATUS_OK
