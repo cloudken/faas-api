@@ -1,0 +1,14 @@
+---
+- hosts: nodes
+  become: yes
+  become_method: sudo
+  gather_facts: no
+
+  vars_files:
+  - destroy_vars.yml
+  
+  tasks:
+  - name: Destroy FaaS-worker container
+    docker_container:
+      name: "{{instance_name}}"
+      state: absent
