@@ -105,3 +105,8 @@ class ImageNotFound(CloudframeException):
 class RpcCallFailed(CloudframeException):
     message = "RPC call %(type)s failed, %(error)s"
     code = http_client.INTERNAL_SERVER_ERROR
+
+
+class FaaSInfoInvalid(CloudframeException):
+    message = "FaaS info is invalid."
+    code = http_client.BAD_REQUEST

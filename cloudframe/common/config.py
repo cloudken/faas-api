@@ -47,7 +47,7 @@ class FaasConfig(object):
     def __init__(self, fun_list):
         self.fun_list = fun_list
 
-    def get_faas_from_path(self, path, faas):
+    def get_faas_list(self, faas, path):
         if not os.path.exists(path):
             raise Exception('Path not exist.')
         for dirpath, dirnames, filenames in os.walk(path):
@@ -62,7 +62,7 @@ class FaasConfig(object):
         fo = open(filename, 'r')
         faas_input = yaml.load(fo)
         fo.close()
-        return self.get_faas(faas_input, faas)
+        self.get_faas(faas_input, faas)
 
     def get_faas(self, faas_input, faas):
         for resource in faas_input['resources']:
@@ -70,4 +70,12 @@ class FaasConfig(object):
             for fun in resource['functions']:
                 if fun['name'] in self.fun_list:
                     fun_key = key + '_' + fun['name']
-                    faas[fun_key] = faas_input['image_name']
+                    faas[fun_key] = faas_input['image_name'] + ':' + faas_input['image_tag']
+
+    def load_and_save_faas(self, faas_input, faas, path):
+        self.get_faas(faas_input, faas)
+        filename = faas_input['image_name'] + ':' + faas_input['image_tag'] + '.yaml'
+        faas_file = path + '/' + filename
+        fo = open(faas_file, 'w')
+        yaml.dump(faas_input, fo)
+        fo.close()

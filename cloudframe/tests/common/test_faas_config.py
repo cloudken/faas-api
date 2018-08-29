@@ -8,14 +8,15 @@ from cloudframe.common.config import FaasConfig
 from cloudframe.manager.function import FUN_LIST
 
 
-class TestHostConfigServers(testtools.TestCase):
+class TestFaasConfigServers(testtools.TestCase):
     def setUp(self):
-        super(TestHostConfigServers, self).setUp()
+        super(TestFaasConfigServers, self).setUp()
 
-    def test_host_config(self):
+    def test_faas_config(self):
         # input
         worker01_desc = {
-            'image_name': 'abc:v1.0',
+            'image_name': 'abc',
+            'image_tag': 'v1.0',
             'domain': 'dom1',
             'resources': [
                 {
@@ -47,7 +48,8 @@ class TestHostConfigServers(testtools.TestCase):
             ]
         }
         worker02_desc = {
-            'image_name': 'def:v1.0',
+            'image_name': 'def',
+            'image_tag': 'v1.0',
             'domain': 'dom2',
             'resources': [
                 {
@@ -76,7 +78,7 @@ class TestHostConfigServers(testtools.TestCase):
         # testing
         fc = FaasConfig(FUN_LIST)
         faas = {}
-        fc.get_faas_from_path(path, faas)
+        fc.get_faas_list(faas, path)
         shutil.rmtree(path)
 
         # output

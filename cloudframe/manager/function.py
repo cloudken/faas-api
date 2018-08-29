@@ -60,10 +60,10 @@ class FunctionInstances(object):
         try:
             self.faas = {}
             fc = FaasConfig(FUN_LIST)
-            fc.get_faas_from_path(FAAS_CONFIG_PATH, self.faas)
+            fc.get_faas_list(self.faas, FAAS_CONFIG_PATH)
         except Exception as e:
-            LOG.error('Read faas_config(%(config)s) failed, error_info: %(error)s',
-                      {'config': FAAS_CONFIG_PATH, 'error': e})
+            LOG.error('Read faas_config failed, error_info: %(error)s',
+                      {'error': e})
             self.faas = DEFAULT_FAAS
         self.ins_list = {}
         self.finished_ins_list = []
@@ -231,3 +231,16 @@ class FunctionInstances(object):
                 if (current - end) > timedelta(seconds=interval):
                     item = [self._destroy_ins, ins]
                     Tasks.put_nowait(item)
+
+    def put_faas(self, faas_input):
+        try:
+            if not self._check_faasinfo(faas_input):
+                raise exception.FaaSInfoInvalid()
+            fc = FaasConfig(FUN_LIST)
+            fc.load_and_save_faas(faas_input, self.faas, FAAS_CONFIG_PATH)
+        except Exception as e:
+            LOG.error('Load FaaS info failed, error_info: %(error)s', {'error': e})
+            raise exception.FaaSInfoInvalid()
+
+    def _check_faasinfo(self, faas_input):
+        return True

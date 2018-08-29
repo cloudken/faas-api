@@ -31,3 +31,6 @@ class FunctionManager(object):
                     LOG.debug('FunctionManager call failed, error info %(error)s', {'error': e})
                     self.scheduler.set_worker_dying(worker_data)
         raise exception.RpcCallFailed(type='function', error='too many error')
+
+    def put_faasinfo(self, faas_input):
+        self.scheduler.put_faas(faas_input)

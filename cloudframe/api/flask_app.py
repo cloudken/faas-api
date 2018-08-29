@@ -104,6 +104,21 @@ def delete(domain_name=None, ver=None, tenant_id=None,
                              e.code)
 
 
+@app.route('/serverless/<ver>/faas', methods=['PUT'])
+def put_faas(ver=None):
+    try:
+        if not request.json:
+            abort(http_client.BAD_REQUEST)
+        req = request.json
+        Manager.put_faasinfo(req)
+        result = {'result': 'ok'}
+        return make_response(result, http_client.OK)
+    except exception.CloudframeException as e:
+        LOG.error('PUT FaaS failed, error info: %(error)s', {'error': e.message})
+        return make_response(jsonify({'error': e.message}),
+                             e.code)
+
+
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 if __name__ == "__main__":
