@@ -233,13 +233,14 @@ class FunctionInstances(object):
                     Tasks.put_nowait(item)
 
     def put_faas(self, faas_input):
+        LOG.debug('Updating FaaS info, input: %(input)s', {'input': faas_input})
         try:
             if not self._check_faasinfo(faas_input):
                 raise exception.FaaSInfoInvalid()
             fc = FaasConfig(FUN_LIST)
             fc.load_and_save_faas(faas_input, self.faas, FAAS_CONFIG_PATH)
         except Exception as e:
-            LOG.error('Load FaaS info failed, error_info: %(error)s', {'error': e})
+            LOG.error('Updating FaaS info failed, error_info: %(error)s', {'error': e})
             raise exception.FaaSInfoInvalid()
 
     def _check_faasinfo(self, faas_input):

@@ -112,7 +112,7 @@ def put_faas(ver=None):
         req = request.json
         Manager.put_faasinfo(req)
         result = {'result': 'ok'}
-        return make_response(result, http_client.OK)
+        return make_response(jsonify(result), http_client.OK)
     except exception.CloudframeException as e:
         LOG.error('PUT FaaS failed, error info: %(error)s', {'error': e.message})
         return make_response(jsonify({'error': e.message}),

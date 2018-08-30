@@ -74,8 +74,10 @@ class FaasConfig(object):
 
     def load_and_save_faas(self, faas_input, faas, path):
         self.get_faas(faas_input, faas)
+        if not os.path.exists(path):
+            os.makedirs(path)
         filename = faas_input['image_name'] + ':' + faas_input['image_tag'] + '.yaml'
         faas_file = path + '/' + filename
         fo = open(faas_file, 'w')
-        yaml.dump(faas_input, fo)
+        yaml.safe_dump(faas_input, fo)
         fo.close()
