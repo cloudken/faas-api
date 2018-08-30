@@ -140,7 +140,8 @@ class FunctionInstances(object):
     def _destroy_ins(self, ins_data):
         try:
             LOG.debug('Destroy instance, info: %(info)s', {'info': ins_data})
-            self.driver.destroy(ins_data)
+            if ins_data['name'] != 'faas_no_name':
+                self.driver.destroy(ins_data)
             self.finished_ins_list.remove(ins_data)
         except Exception as e:
             LOG.error('Destroy instance failed, error_info: %(error)s', {'error': e})
@@ -172,7 +173,7 @@ class FunctionInstances(object):
         ins_name = image_name + '_' + str(num)
         LOG.debug('Create FaaS-instance %(ins)s begin...', {'ins': ins_name})
         ins_data = {
-            'name': 'no name',
+            'name': 'faas_no_name',
             'created_at': datetime.now(),
             'status': INS_STATUS_INIT
         }
