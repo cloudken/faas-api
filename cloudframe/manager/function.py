@@ -9,7 +9,7 @@ from cloudframe.common.config import HostConfig
 from cloudframe.common.config import FaasConfig
 from cloudframe.common.job import Tasks
 from cloudframe.common.rpc import MyRPC
-from cloudframe.driver.docker import Instance
+from cloudframe.driver.docker_api import Instance
 
 LOG = logging.getLogger(__name__)
 

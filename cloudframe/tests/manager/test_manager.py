@@ -5,7 +5,7 @@ import testtools
 
 from cloudframe.common import exception
 from cloudframe.manager.manager import FunctionManager
-from cloudframe.driver.docker import Instance
+from cloudframe.driver.docker_api import Instance
 from cloudframe.common.rpc import MyRPC
 
 

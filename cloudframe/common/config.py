@@ -26,8 +26,10 @@ class HostConfig(object):
         host_info['host_ip'] = self.config.get(host, 'host_ip')
         host_info['host_par'] = host_info['host_ip']
         for item in section:
-            if item[0] != 'host_ip':
+            if item[0] != 'host_ip' and item[0] != 'host_api':
                 host_info['host_par'] += ' ' + item[0] + '=' + item[1]
+        if self.config.has_option(host, 'host_api'):
+            host_info['host_api'] = self.config.get(host, 'host_api')
         return host_info
 
     def get_host_info(self):
