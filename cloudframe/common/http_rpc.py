@@ -78,3 +78,20 @@ class HRPC(object):
             return json.loads(content)
         else:
             raise exception.HttpError(response.status)
+
+    def post_no_ack(self, object_id=None, input_parameters=None):
+        if input_parameters is None:
+            body = None
+            headers = None
+        else:
+            body = json.dumps(input_parameters)
+            headers = {'Content-Type': 'application/json'}
+        if object_id is None:
+            url = self.endpoint
+        else:
+            url = self.endpoint + object_id
+        LOG.debug('Post_no_ack: url %(url)s, body %(body)s', {'url': url, 'body': body})
+        response, content = self.http.request(url, 'POST', body=body, headers=headers)
+        LOG.debug('Post_no_ack result: status %(st)s, content %(ct)s', {'st': response.status, 'ct': content})
+        if response.status not in [http_client.OK, http_client.CREATED, http_client.NO_CONTENT]:
+            raise exception.HttpError(response.status)

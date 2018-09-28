@@ -1,0 +1,26 @@
+---
+- hosts: nodes
+  become: yes
+  become_method: sudo
+  gather_facts: no
+
+  vars_files:
+  - vars.yml
+  
+  tasks:
+  - name: FaaS-worker container
+    docker_container:
+      name: "{{deploy_name}}"
+      image: "{{deploy_image}}"
+      state: started
+      restart_policy: no
+      volumes:
+      - "/root/faas/cf-base/usr:/usr:ro"
+      - "{{log_path}}:/var/log/cloudframe"
+      expose:
+      - 50051
+      ports:
+      - "{{host_port}}:50051"
+      env:
+        LOG_LEVEL: "{{log_level}}"
+        LIFE_CYCLE: "{{life_cycle}}"

@@ -34,3 +34,6 @@ class FunctionManager(object):
 
     def put_faasinfo(self, faas_input):
         self.scheduler.put_faas(faas_input)
+
+    def get_worker(self, domain, version, res, opr):
+        return self.scheduler.get_worker(domain, version, res, opr)
