@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='worker.proto',
   package='WorkerData',
   syntax='proto3',
-  serialized_pb=_b('\n\x0cworker.proto\x12\nWorkerData\"O\n\rWorkerRequest\x12\x0b\n\x03opr\x18\x01 \x01(\t\x12\x0e\n\x06\x64omain\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t\x12\x10\n\x08resource\x18\x04 \x01(\t\"`\n\x0bWorkerReply\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\t\x12\x0f\n\x07host_ip\x18\x03 \x01(\t\x12\x11\n\thost_port\x18\x04 \x01(\x05\x12\x13\n\x0breturn_code\x18\x05 \x01(\x05\x32G\n\x07Greeter\x12<\n\x04\x43\x61ll\x12\x19.WorkerData.WorkerRequest\x1a\x17.WorkerData.WorkerReply\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x0cworker.proto\x12\nWorkerData\"O\n\rWorkerRequest\x12\x0b\n\x03opr\x18\x01 \x01(\t\x12\x0e\n\x06\x64omain\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t\x12\x10\n\x08resource\x18\x04 \x01(\t\"`\n\x0bWorkerReply\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\t\x12\x0f\n\x07host_ip\x18\x03 \x01(\t\x12\x11\n\thost_port\x18\x04 \x01(\x05\x12\x13\n\x0breturn_code\x18\x05 \x01(\x05\"6\n\nWorkerInfo\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\t\x12\x0e\n\x06status\x18\x03 \x01(\x05\"\"\n\x0b\x43ommonReply\x12\x13\n\x0breturn_code\x18\x01 \x01(\x05\x32\x87\x01\n\x07Greeter\x12<\n\x04\x43\x61ll\x12\x19.WorkerData.WorkerRequest\x1a\x17.WorkerData.WorkerReply\"\x00\x12>\n\tSetStatus\x12\x16.WorkerData.WorkerInfo\x1a\x17.WorkerData.CommonReply\"\x00\x62\x06proto3')
 )
 
 
@@ -135,8 +135,86 @@ _WORKERREPLY = _descriptor.Descriptor(
   serialized_end=205,
 )
 
+
+_WORKERINFO = _descriptor.Descriptor(
+  name='WorkerInfo',
+  full_name='WorkerData.WorkerInfo',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='WorkerData.WorkerInfo.name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='WorkerData.WorkerInfo.id', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='status', full_name='WorkerData.WorkerInfo.status', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=207,
+  serialized_end=261,
+)
+
+
+_COMMONREPLY = _descriptor.Descriptor(
+  name='CommonReply',
+  full_name='WorkerData.CommonReply',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='return_code', full_name='WorkerData.CommonReply.return_code', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=263,
+  serialized_end=297,
+)
+
 DESCRIPTOR.message_types_by_name['WorkerRequest'] = _WORKERREQUEST
 DESCRIPTOR.message_types_by_name['WorkerReply'] = _WORKERREPLY
+DESCRIPTOR.message_types_by_name['WorkerInfo'] = _WORKERINFO
+DESCRIPTOR.message_types_by_name['CommonReply'] = _COMMONREPLY
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 WorkerRequest = _reflection.GeneratedProtocolMessageType('WorkerRequest', (_message.Message,), dict(
@@ -153,6 +231,20 @@ WorkerReply = _reflection.GeneratedProtocolMessageType('WorkerReply', (_message.
   ))
 _sym_db.RegisterMessage(WorkerReply)
 
+WorkerInfo = _reflection.GeneratedProtocolMessageType('WorkerInfo', (_message.Message,), dict(
+  DESCRIPTOR = _WORKERINFO,
+  __module__ = 'worker_pb2'
+  # @@protoc_insertion_point(class_scope:WorkerData.WorkerInfo)
+  ))
+_sym_db.RegisterMessage(WorkerInfo)
+
+CommonReply = _reflection.GeneratedProtocolMessageType('CommonReply', (_message.Message,), dict(
+  DESCRIPTOR = _COMMONREPLY,
+  __module__ = 'worker_pb2'
+  # @@protoc_insertion_point(class_scope:WorkerData.CommonReply)
+  ))
+_sym_db.RegisterMessage(CommonReply)
+
 
 
 _GREETER = _descriptor.ServiceDescriptor(
@@ -161,8 +253,8 @@ _GREETER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=207,
-  serialized_end=278,
+  serialized_start=300,
+  serialized_end=435,
   methods=[
   _descriptor.MethodDescriptor(
     name='Call',
@@ -171,6 +263,15 @@ _GREETER = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_WORKERREQUEST,
     output_type=_WORKERREPLY,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='SetStatus',
+    full_name='WorkerData.Greeter.SetStatus',
+    index=1,
+    containing_service=None,
+    input_type=_WORKERINFO,
+    output_type=_COMMONREPLY,
     options=None,
   ),
 ])
@@ -203,6 +304,11 @@ try:
           request_serializer=WorkerRequest.SerializeToString,
           response_deserializer=WorkerReply.FromString,
           )
+      self.SetStatus = channel.unary_unary(
+          '/WorkerData.Greeter/SetStatus',
+          request_serializer=WorkerInfo.SerializeToString,
+          response_deserializer=CommonReply.FromString,
+          )
 
 
   class GreeterServicer(object):
@@ -216,6 +322,13 @@ try:
       context.set_details('Method not implemented!')
       raise NotImplementedError('Method not implemented!')
 
+    def SetStatus(self, request, context):
+      # missing associated documentation comment in .proto file
+      pass
+      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+      context.set_details('Method not implemented!')
+      raise NotImplementedError('Method not implemented!')
+
 
   def add_GreeterServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -223,6 +336,11 @@ try:
             servicer.Call,
             request_deserializer=WorkerRequest.FromString,
             response_serializer=WorkerReply.SerializeToString,
+        ),
+        'SetStatus': grpc.unary_unary_rpc_method_handler(
+            servicer.SetStatus,
+            request_deserializer=WorkerInfo.FromString,
+            response_serializer=CommonReply.SerializeToString,
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -242,6 +360,10 @@ try:
       # missing associated documentation comment in .proto file
       pass
       context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
+    def SetStatus(self, request, context):
+      # missing associated documentation comment in .proto file
+      pass
+      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
 
 
   class BetaGreeterStub(object):
@@ -257,6 +379,11 @@ try:
       pass
       raise NotImplementedError()
     Call.future = None
+    def SetStatus(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
+      # missing associated documentation comment in .proto file
+      pass
+      raise NotImplementedError()
+    SetStatus.future = None
 
 
   def beta_create_Greeter_server(servicer, pool=None, pool_size=None, default_timeout=None, maximum_timeout=None):
@@ -267,12 +394,15 @@ try:
     generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
     request_deserializers = {
       ('WorkerData.Greeter', 'Call'): WorkerRequest.FromString,
+      ('WorkerData.Greeter', 'SetStatus'): WorkerInfo.FromString,
     }
     response_serializers = {
       ('WorkerData.Greeter', 'Call'): WorkerReply.SerializeToString,
+      ('WorkerData.Greeter', 'SetStatus'): CommonReply.SerializeToString,
     }
     method_implementations = {
       ('WorkerData.Greeter', 'Call'): face_utilities.unary_unary_inline(servicer.Call),
+      ('WorkerData.Greeter', 'SetStatus'): face_utilities.unary_unary_inline(servicer.SetStatus),
     }
     server_options = beta_implementations.server_options(request_deserializers=request_deserializers, response_serializers=response_serializers, thread_pool=pool, thread_pool_size=pool_size, default_timeout=default_timeout, maximum_timeout=maximum_timeout)
     return beta_implementations.server(method_implementations, options=server_options)
@@ -286,12 +416,15 @@ try:
     generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
     request_serializers = {
       ('WorkerData.Greeter', 'Call'): WorkerRequest.SerializeToString,
+      ('WorkerData.Greeter', 'SetStatus'): WorkerInfo.SerializeToString,
     }
     response_deserializers = {
       ('WorkerData.Greeter', 'Call'): WorkerReply.FromString,
+      ('WorkerData.Greeter', 'SetStatus'): CommonReply.FromString,
     }
     cardinalities = {
       'Call': cardinality.Cardinality.UNARY_UNARY,
+      'SetStatus': cardinality.Cardinality.UNARY_UNARY,
     }
     stub_options = beta_implementations.stub_options(host=host, metadata_transformer=metadata_transformer, request_serializers=request_serializers, response_deserializers=response_deserializers, thread_pool=pool, thread_pool_size=pool_size)
     return beta_implementations.dynamic_stub(channel, 'WorkerData.Greeter', cardinalities, options=stub_options)

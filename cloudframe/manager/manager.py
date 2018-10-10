@@ -37,3 +37,7 @@ class FunctionManager(object):
 
     def get_worker(self, domain, version, res, opr):
         return self.scheduler.get_worker(domain, version, res, opr)
+
+    def set_worker_dying(self, ins_name, ins_id):
+        worker = self.scheduler.get_worker_by_name(ins_name, ins_id)
+        self.scheduler.set_worker_dying(worker)

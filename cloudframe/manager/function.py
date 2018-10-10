@@ -173,6 +173,7 @@ class FunctionInstances(object):
         ins_name = image_name + '_' + str(num)
         LOG.debug('Create FaaS-instance %(ins)s begin...', {'ins': ins_name})
         ins_data = {
+            'ins_name': ins_name,
             'name': 'faas_no_name',
             'created_at': datetime.now(),
             'status': INS_STATUS_INIT
@@ -199,6 +200,16 @@ class FunctionInstances(object):
     def set_worker_dying(self, ins_data):
         ins_data['status'] = INS_STATUS_DYING
         LOG.debug('FaaS-instance set dying, info: %(info)s', {'info': ins_data})
+
+    def get_worker_by_name(self, ins_name, ins_id):
+        if ins_name not in self.ins_list:
+            raise exception.ObjectNotFound(object=ins_name)
+        ins_data = self.ins_list[ins_name]
+        if ins_data['ins_name'] != ins_name or ins_data['id'] != ins_id:
+            LOG.error('get_worker_by_name: par is illegal; input: %(i_name)s, %(i_id)s; local: %(l_name)s, %(l_id)s',
+                      {'i_name': ins_name, 'i_id': ins_id, 'l_name': ins_data['ins_name'], 'l_id': ins_data['id']})
+            raise exception.ObjectNotFound(object=ins_name)
+        return ins_data
 
     def _check_worker_status(self, ins_name):
         LOG.debug('Checking worker %(name)s status...', {'name': ins_name})

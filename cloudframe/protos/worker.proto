@@ -3,6 +3,7 @@ package WorkerData;
 
 service Greeter {
   rpc Call (WorkerRequest) returns (WorkerReply) {}
+  rpc SetStatus (WorkerInfo) returns (CommonReply) {}
 }
 
 message WorkerRequest {
@@ -18,4 +19,14 @@ message WorkerReply {
   string host_ip = 3;
   int32 host_port = 4;
   int32 return_code = 5;
+}
+
+message WorkerInfo {
+  string name = 1;
+  string id = 2;
+  int32 status = 3;
+}
+
+message CommonReply {
+  int32 return_code = 1;
 }

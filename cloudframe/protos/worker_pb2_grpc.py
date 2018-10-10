@@ -19,6 +19,11 @@ class GreeterStub(object):
         request_serializer=worker__pb2.WorkerRequest.SerializeToString,
         response_deserializer=worker__pb2.WorkerReply.FromString,
         )
+    self.SetStatus = channel.unary_unary(
+        '/WorkerData.Greeter/SetStatus',
+        request_serializer=worker__pb2.WorkerInfo.SerializeToString,
+        response_deserializer=worker__pb2.CommonReply.FromString,
+        )
 
 
 class GreeterServicer(object):
@@ -32,6 +37,13 @@ class GreeterServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def SetStatus(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_GreeterServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -39,6 +51,11 @@ def add_GreeterServicer_to_server(servicer, server):
           servicer.Call,
           request_deserializer=worker__pb2.WorkerRequest.FromString,
           response_serializer=worker__pb2.WorkerReply.SerializeToString,
+      ),
+      'SetStatus': grpc.unary_unary_rpc_method_handler(
+          servicer.SetStatus,
+          request_deserializer=worker__pb2.WorkerInfo.FromString,
+          response_serializer=worker__pb2.CommonReply.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(

@@ -23,6 +23,7 @@ logging.basicConfig(
     filemode='a')
 LOG = logging.getLogger(__name__)
 Manager = FunctionManager()
+FAAS_DYING = 1033
 
 
 class WorkerServicer(worker_pb2_grpc.GreeterServicer):
@@ -37,9 +38,9 @@ class WorkerServicer(worker_pb2_grpc.GreeterServicer):
             opr = request.opr.encode('utf-8')
             wk_info = Manager.get_worker(domain, version, resource, opr)
             LOG.debug('Worker call end, name %(name)s, id %(id)s, host_ip %(host_ip)s, host_port %(host_port)s.',
-                      {'name': wk_info['name'], 'id': wk_info['id'], 'host_ip': wk_info['host_ip'], 'host_port': wk_info['host_port']})
+                      {'name': wk_info['ins_name'], 'id': wk_info['id'], 'host_ip': wk_info['host_ip'], 'host_port': wk_info['host_port']})
             return worker_pb2.WorkerReply(
-                name=wk_info['name'],
+                name=wk_info['ins_name'],
                 id=wk_info['id'],
                 host_ip=wk_info['host_ip'],
                 host_port=wk_info['host_port'],
@@ -47,3 +48,20 @@ class WorkerServicer(worker_pb2_grpc.GreeterServicer):
         except Exception as e:
             LOG.error('Worker Call failed, error_info: %(error)s', {'error': e})
             return worker_pb2.WorkerReply(return_code=http_client.INTERNAL_SERVER_ERROR)
+
+    def SetStatus(self, request, context):
+        try:
+            LOG.debug('Worker SetStatus begin, name %(name)s, id %(id)s, status %(status)d.',
+                      {'name': request.name, 'id': request.id, 'status': request.status})
+            name = request.name.encode('utf-8')
+            worker_id = request.id.encode('utf-8')
+            if request.status == FAAS_DYING:
+                Manager.set_worker_dying(name, worker_id)
+                LOG.debug('Worker SetStatus end.')
+                return worker_pb2.CommonReply(return_code=http_client.OK)
+            else:
+                LOG.error('Worker status %(status)d is illegal.', {'status': request.status})
+                return worker_pb2.CommonReply(return_code=http_client.FORBIDDEN)
+        except Exception as e:
+            LOG.error('Worker SetStatus failed, error_info: %(error)s', {'error': e})
+            return worker_pb2.CommonReply(return_code=http_client.INTERNAL_SERVER_ERROR)
