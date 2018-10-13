@@ -119,6 +119,15 @@ def put_faas(ver=None):
                              e.code)
 
 
+@app.route('/serverless/version', methods=['GET'])
+def get_faas_version():
+    result = {
+        'name': 'FaaS',
+        'version': 'V0.1.1001'
+    }
+    return make_response(jsonify(result), http_client.OK)
+
+
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 if __name__ == "__main__":

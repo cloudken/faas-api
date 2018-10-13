@@ -30,3 +30,13 @@ def worker(n):
 def start_worker(num_jobs):
     for i in range(num_jobs):
         gevent.spawn(worker, i)
+
+
+def rpc_cast(function, **kwargs):
+    item = [function, kwargs]
+    Tasks.put_nowait(item)
+
+
+def rpc_call(function, **kwargs):
+    item = [function, kwargs]
+    Tasks.put(item)

@@ -7,7 +7,7 @@ import time
 from cloudframe.common import exception
 from cloudframe.common.config import HostConfig
 from cloudframe.common.config import FaasConfig
-from cloudframe.common.job import Tasks
+from cloudframe.common import job
 from cloudframe.common.rpc import MyRPC
 from cloudframe.driver.docker_api import Instance
 
@@ -78,8 +78,7 @@ class FunctionInstances(object):
             'checking_time': 30,
             'aging_time': 300
         }
-        item = [self._check_dead_worker, delay]
-        Tasks.put_nowait(item)
+        job.rpc_cast(self._check_dead_worker, delay=delay)
 
     def _get_image(self, domain, version, res, opr, num):
         if num > MAX_INS:
@@ -190,8 +189,7 @@ class FunctionInstances(object):
                 ins_data['started_at'] = datetime.now()
                 LOG.debug('Create FaaS-instance %(ins)s success, info: %(info)s',
                           {'ins': ins_name, 'info': ins_data})
-                item = [self._check_worker_status, ins_name]
-                Tasks.put_nowait(item)
+                job.rpc_cast(self._check_worker_status, ins_name=ins_name)
                 return ins_data
             time.sleep(index)
         self._delete_ins(ins_name)
@@ -219,16 +217,13 @@ class FunctionInstances(object):
         if ins_data['status'] == INS_STATUS_OK:
             if self._check_ins(ins_data):
                 time.sleep(5)
-                item = [self._check_worker_status, ins_name]
-                Tasks.put_nowait(item)
+                job.rpc_cast(self._check_worker_status, ins_name=ins_name)
             else:
                 ins_data['status'] = INS_STATUS_DYING
-                item = [self._check_worker_status, ins_name]
-                Tasks.put_nowait(item)
+                job.rpc_cast(self._check_worker_status, ins_name=ins_name)
         elif ins_data['status'] in [INS_STATUS_INIT, INS_STATUS_CHECKING]:
             time.sleep(5)
-            item = [self._check_worker_status, ins_name]
-            Tasks.put_nowait(item)
+            job.rpc_cast(self._check_worker_status, ins_name=ins_name)
         else:
             self._delete_ins(ins_name)
 
@@ -241,8 +236,7 @@ class FunctionInstances(object):
                 end = ins['finished_at']
                 interval = delay['aging_time']
                 if (current - end) > timedelta(seconds=interval):
-                    item = [self._destroy_ins, ins]
-                    Tasks.put_nowait(item)
+                    job.rpc_cast(self._destroy_ins, ins_data=ins)
 
     def put_faas(self, faas_input):
         LOG.debug('Updating FaaS info, input: %(input)s', {'input': faas_input})
